@@ -1,0 +1,2673 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>B&C — Novo Contrato Recorrente</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:#1E3A5F;--navy-deep:#122540;--gold:#C9A84C;--gold-light:#E8CC82;
+    --gold-pale:#F7EDD0;--white:#FAFAF8;--surface:#F3F1EC;
+    --border:rgba(30,58,95,0.12);--border-strong:rgba(30,58,95,0.25);
+    --text:#1A2A3E;--text-muted:#5A6E84;--text-hint:#8FA3B8;
+    --success:#2D6A4F;--success-bg:#E8F5EE;
+    --danger:#8C1E1E;--danger-bg:#FDECEA;--danger-border:#E57373;
+    --radius:4px;--radius-md:8px;--radius-lg:12px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);min-height:100vh;}
+
+  /* ── Login screen ── */
+  #login-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2rem;padding:2rem;}
+  .login-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2.5rem 2.5rem 2rem;width:100%;max-width:400px;text-align:center;}
+  .login-logo{width:56px;height:56px;border:2px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--gold);margin:0 auto 1.25rem;}
+  .login-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--navy);margin-bottom:4px;}
+  .login-sub{font-size:12px;color:var(--text-muted);margin-bottom:1.75rem;line-height:1.5;}
+  .btn-ms{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:44px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius-md);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:background .2s;}
+  .btn-ms:hover{background:var(--navy-deep);}
+  .btn-ms:disabled{opacity:.5;cursor:not-allowed;}
+  .login-error{margin-top:1rem;font-size:12px;color:var(--danger);background:var(--danger-bg);border:1px solid var(--danger-border);border-radius:var(--radius);padding:8px 12px;display:none;}
+  .login-error.show{display:block;}
+  .login-notice{font-size:11px;color:var(--text-hint);margin-top:1rem;line-height:1.5;}
+
+  /* ── User bar ── */
+  #user-bar{display:none;background:rgba(30,58,95,0.06);border-bottom:1px solid var(--border);padding:8px 2.5rem;font-size:12px;color:var(--text-muted);display:none;align-items:center;justify-content:space-between;}
+  #user-bar.visible{display:flex;}
+  .user-info{display:flex;align-items:center;gap:8px;}
+  .user-avatar{width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;}
+  .btn-logout{font-size:11px;color:var(--text-hint);background:transparent;border:none;cursor:pointer;text-decoration:underline;}
+  .btn-logout:hover{color:var(--danger);}
+  .btn-log-view{font-size:11px;color:var(--navy);background:transparent;border:1px solid var(--border-strong);padding:3px 10px;border-radius:20px;cursor:pointer;}
+  .btn-log-view:hover{background:var(--gold-pale);}
+
+  /* ── App ── */
+  #app-screen{display:none;}
+  #app-screen.visible{display:block;}
+
+  .header{background:var(--navy);padding:0 2.5rem;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(201,168,76,0.3);}
+  .header-brand{display:flex;align-items:center;gap:14px;}
+  .header-logo{width:36px;height:36px;border:1.5px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:var(--gold);}
+  .header-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:#fff;}
+  .header-sub{font-size:11px;font-weight:300;color:var(--gold-light);letter-spacing:1.5px;text-transform:uppercase;}
+  .header-badge{font-size:11px;color:var(--gold);border:1px solid rgba(201,168,76,.4);padding:4px 10px;border-radius:20px;}
+
+  .main{max-width:860px;margin:0 auto;padding:2.5rem 2rem 4rem;}
+  .page-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:500;color:var(--navy);margin-bottom:4px;}
+  .page-sub{font-size:13px;color:var(--text-muted);margin-bottom:2rem;font-weight:300;}
+
+  .steps{display:flex;align-items:center;margin-bottom:2.5rem;}
+  .step-item{display:flex;align-items:center;gap:8px;flex:1;}
+  .step-item:last-child{flex:none;}
+  .step-dot{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border-strong);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--text-muted);background:var(--white);flex-shrink:0;transition:all .25s;}
+  .step-dot.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+  .step-dot.done{background:var(--gold);border-color:var(--gold);color:#fff;}
+  .step-label{font-size:12px;color:var(--text-muted);}
+  .step-label.active{color:var(--navy);font-weight:500;}
+  .step-line{flex:1;height:1px;background:var(--border-strong);margin:0 10px;}
+  .step-line.done{background:var(--gold);}
+
+  .card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
+  .card-header{background:var(--navy);padding:1rem 1.5rem;display:flex;align-items:center;gap:10px;}
+  .card-header-icon{width:32px;height:32px;border-radius:50%;background:rgba(201,168,76,.2);border:1px solid rgba(201,168,76,.4);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--gold);}
+  .card-header-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;color:#fff;}
+  .card-header-sub{font-size:11px;color:var(--gold-light);font-weight:300;margin-left:auto;}
+  .card-body{padding:1.75rem 1.5rem;}
+
+  .service-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .service-btn{border:1.5px solid var(--border-strong);border-radius:var(--radius-md);padding:1.1rem 1rem;background:var(--white);cursor:pointer;text-align:left;transition:all .2s;position:relative;overflow:hidden;}
+  .service-btn:hover:not(.disabled){border-color:var(--navy);background:#F0F4F9;}
+  .service-btn.selected{border-color:var(--gold);background:var(--gold-pale);}
+  .service-btn.disabled{opacity:.4;cursor:not-allowed;}
+  .service-code{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--navy);line-height:1;margin-bottom:4px;}
+  .service-name{font-size:12px;color:var(--text-muted);}
+  .service-btn.selected .service-code{color:var(--gold);}
+  .service-btn.selected .service-name{color:var(--navy);}
+  .service-coming{position:absolute;top:6px;right:6px;font-size:9px;font-weight:500;letter-spacing:.5px;color:var(--text-hint);background:var(--surface);padding:2px 6px;border-radius:10px;text-transform:uppercase;}
+
+  .screen{display:none;}
+  .screen.active{display:block;}
+
+  .form-section-title{font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin:1.5rem 0 1rem;padding-bottom:6px;border-bottom:1px solid var(--gold-pale);}
+  .form-section-title:first-child{margin-top:0;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .form-grid.triple{grid-template-columns:1fr 1fr 1fr;}
+  .field{display:flex;flex-direction:column;gap:5px;}
+  .field.span2{grid-column:span 2;}
+
+  label{font-size:12px;font-weight:500;color:var(--text-muted);letter-spacing:.3px;}
+  label .req{color:var(--gold);margin-left:2px;}
+  label em{font-style:italic;font-weight:400;color:var(--text-hint);font-size:11px;}
+
+  input[type="text"],input[type="date"],select,textarea{
+    height:38px;padding:0 12px;border:1px solid var(--border-strong);border-radius:var(--radius);
+    font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--white);
+    outline:none;transition:border-color .15s,box-shadow .15s;width:100%;
+  }
+  textarea{height:auto;padding:10px 12px;resize:vertical;}
+  input:focus,select:focus,textarea:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(30,58,95,.08);}
+  input[readonly]{background:#F0F4F9;color:var(--navy);font-weight:500;cursor:default;}
+  select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235A6E84' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
+
+  .field.has-error input,.field.has-error select,.field.has-error textarea{border-color:var(--danger-border);box-shadow:0 0 0 3px rgba(229,115,115,.15);}
+  .field.has-error .toggle-group,.field.has-error .ie-toggle-row{outline:2px solid var(--danger-border);outline-offset:2px;border-radius:var(--radius);}
+  .field-error-msg{font-size:11px;color:var(--danger);margin-top:3px;display:none;}
+  .field.has-error .field-error-msg{display:block;}
+  .val-banner{display:none;background:var(--danger-bg);border:1px solid var(--danger-border);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:1.25rem;font-size:13px;color:var(--danger);line-height:1.5;}
+  .val-banner.show{display:flex;align-items:flex-start;gap:10px;}
+  .val-banner svg{flex-shrink:0;margin-top:1px;}
+
+  .cnpj-wrap{position:relative;}
+  .cnpj-wrap input{padding-right:44px;}
+  .cnpj-status{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;}
+
+  /* IE row */
+  .ie-wrap{display:flex;flex-direction:column;gap:6px;}
+  .ie-toggle-row{display:flex;gap:8px;}
+  .ie-opt{flex:1;text-align:center;padding:8px;border:1px solid var(--border-strong);border-radius:var(--radius);font-size:13px;cursor:pointer;user-select:none;transition:all .15s;color:var(--text-muted);}
+  .ie-opt:hover{border-color:var(--navy);color:var(--navy);}
+  .ie-opt.sel-isenta{background:#2D6A4F;border-color:#2D6A4F;color:#fff;font-weight:500;}
+  .ie-opt.sel-numero{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:500;}
+  .ie-number-row{display:none;margin-top:4px;gap:8px;}
+  .ie-sintegra-btn{white-space:nowrap;height:38px;padding:0 12px;background:var(--gold-pale);border:1px solid var(--gold);border-radius:var(--radius);font-size:12px;font-weight:500;color:var(--navy);cursor:pointer;display:flex;align-items:center;gap:5px;text-decoration:none;transition:background .15s;flex-shrink:0;}
+  .ie-sintegra-btn:hover{background:var(--gold);color:#fff;}
+  .ie-sintegra-btn.disabled{opacity:.4;cursor:not-allowed;pointer-events:none;}
+
+  .toggle-group{display:flex;gap:8px;}
+  .toggle-opt{flex:1;text-align:center;padding:8px;border:1px solid var(--border-strong);border-radius:var(--radius);font-size:13px;cursor:pointer;user-select:none;transition:all .15s;color:var(--text-muted);}
+  .toggle-opt:hover{border-color:var(--navy);color:var(--navy);}
+  .toggle-opt.selected{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:500;}
+
+  .council-wrap{display:flex;flex-direction:column;gap:6px;}
+  .council-other-row{display:none;gap:8px;align-items:center;margin-top:4px;}
+  .council-other-row input{flex:1;}
+  .council-other-label{font-size:12px;color:var(--text-muted);white-space:nowrap;}
+
+  .form-progress{height:3px;background:var(--border);border-radius:2px;margin-bottom:1.75rem;overflow:hidden;}
+  .form-progress-bar{height:100%;background:linear-gradient(90deg,var(--navy),var(--gold));border-radius:2px;transition:width .4s ease;}
+
+  .nav-row{display:flex;align-items:center;justify-content:space-between;margin-top:2rem;padding-top:1.25rem;border-top:1px solid var(--border);}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:0 20px;height:40px;border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;border:none;}
+  .btn-ghost{background:transparent;border:1px solid var(--border-strong);color:var(--text-muted);}
+  .btn-ghost:hover{background:var(--surface);color:var(--text);}
+  .btn-primary{background:var(--navy);color:#fff;}
+  .btn-primary:hover{background:var(--navy-deep);}
+  .btn-reset{background:transparent;border:1px solid rgba(201,168,76,.4);color:var(--text-muted);font-size:12px;height:34px;padding:0 14px;}
+  .btn-reset:hover{background:var(--gold-pale);color:var(--navy);}
+
+  .review-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .review-item{padding:10px 14px;background:var(--surface);border-radius:var(--radius);border-left:2px solid var(--gold);}
+  .review-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:1px;color:var(--text-hint);margin-bottom:2px;}
+  .review-value{font-size:13px;font-weight:500;color:var(--navy);}
+  .review-value.empty{color:var(--text-hint);font-weight:400;font-style:italic;}
+
+  .export-box{background:var(--surface);border:1px dashed var(--border-strong);border-radius:var(--radius-md);padding:1.25rem 1.5rem;margin-top:1.5rem;}
+  .export-title{font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:.75rem;}
+  .export-row{font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);padding:7px 10px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);word-break:break-all;line-height:1.6;}
+  .copy-btn{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:7px 14px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:12px;cursor:pointer;transition:background .15s;}
+  .copy-btn:hover{background:var(--navy-deep);}
+  .copy-btn.copied{background:var(--success);}
+
+  .date-wrap{position:relative;}
+  .date-tip{display:none;position:absolute;bottom:calc(100% + 8px);left:0;width:320px;background:var(--navy);color:#fff;font-size:12px;padding:9px 13px;border-radius:var(--radius-md);line-height:1.5;z-index:10;pointer-events:none;}
+  .date-tip::after{content:'';position:absolute;top:100%;left:20px;border:5px solid transparent;border-top-color:var(--navy);}
+  .date-wrap input:focus + .date-tip{display:block;}
+
+  /* ── Audit log modal ── */
+  .modal-overlay{position:fixed;inset:0;background:rgba(18,37,64,.55);z-index:100;display:none;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--white);border-radius:var(--radius-lg);width:100%;max-width:820px;overflow:hidden;margin:auto;}
+  .modal-header{background:var(--navy);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+  .modal-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;color:#fff;}
+  .modal-close{background:transparent;border:none;color:rgba(255,255,255,.6);font-size:20px;cursor:pointer;line-height:1;padding:0 4px;}
+  .modal-close:hover{color:#fff;}
+  .modal-body{padding:1.5rem;}
+  .log-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;gap:10px;}
+  .log-count{font-size:12px;color:var(--text-muted);}
+  .btn-export-log{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:12px;cursor:pointer;}
+  .btn-export-log:hover{background:var(--navy-deep);}
+  .btn-clear-log{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:transparent;color:var(--danger);border:1px solid var(--danger-border);border-radius:var(--radius);font-size:12px;cursor:pointer;}
+  .log-table-wrap{overflow-x:auto;}
+  table.log-table{width:100%;border-collapse:collapse;font-size:12px;}
+  .log-table th{background:var(--navy);color:#fff;padding:8px 10px;text-align:left;font-weight:500;white-space:nowrap;}
+  .log-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text);}
+  .log-table tr:hover td{background:var(--surface);}
+  .log-empty{text-align:center;padding:2rem;color:var(--text-hint);font-size:13px;}
+  .log-tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:500;letter-spacing:.3px;}
+  .log-tag.insert{background:var(--success-bg);color:var(--success);}
+
+  .toast{position:fixed;bottom:2rem;right:2rem;background:var(--navy);color:#fff;padding:12px 18px;border-radius:var(--radius-md);font-size:13px;border-left:3px solid var(--gold);opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;z-index:999;}
+  .toast.show{opacity:1;transform:translateY(0);}
+  .protected-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--text-hint);margin-top:1rem;}
+  .field-hint{font-size:11px;color:var(--text-hint);margin-top:2px;}
+  .field-hint.field-loading{color:var(--gold);}
+  .field-hint.field-ok{color:var(--success);}
+  .field-hint.field-err{color:var(--danger);}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     LOGIN SCREEN
+══════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">B&C</div>
+    <div class="login-title">Acesso restrito</div>
+    <div class="login-sub">Este sistema é de uso exclusivo da equipe autorizada da Braga &amp; Campos Assessoria Contábil.</div>
+    <button class="btn-ms" id="btn-login" onclick="doLogin()">
+      <svg width="18" height="18" viewBox="0 0 21 21" fill="none"><rect width="10" height="10" fill="#F25022"/><rect x="11" width="10" height="10" fill="#7FBA00"/><rect y="11" width="10" height="10" fill="#00A4EF"/><rect x="11" y="11" width="10" height="10" fill="#FFB900"/></svg>
+      Entrar com Microsoft
+    </button>
+    <div class="login-error" id="login-error"></div>
+    <div class="login-notice">
+      Somente contas autorizadas pela administração do B&amp;C têm acesso.<br>
+      Em caso de dúvida, entre em contato com o responsável do sistema.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     USER BAR
+══════════════════════════════════════════ -->
+<div id="user-bar">
+  <div class="user-info">
+    <div class="user-avatar" id="user-avatar">?</div>
+    <span id="user-name-bar">—</span>
+    <span style="color:var(--border-strong);">·</span>
+    <span id="user-email-bar" style="color:var(--text-hint);font-size:11px;">—</span>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center;">
+    <button class="btn-log-view" onclick="openLog()">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Log de auditoria
+    </button>
+    <button class="btn-logout" onclick="doLogout()">Sair</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     APP SCREEN
+══════════════════════════════════════════ -->
+<div id="app-screen">
+  <div class="header">
+    <div class="header-brand">
+      <div class="header-logo">B&C</div>
+      <div>
+        <div class="header-name">Braga &amp; Campos Assessoria</div>
+        <div class="header-sub">Gestão de Contratos Recorrentes</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <button onclick="openFicha()" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.5);border-radius:20px;color:var(--gold);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Ficha do Cliente
+    </button>
+    <button onclick="openAlteracao()" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.5);border-radius:20px;color:var(--gold);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Alteração de Situação
+    </button>
+    <button onclick="openEdicao()" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.5);border-radius:20px;color:var(--gold);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Editar Cadastro
+    </button>
+    <button onclick="openRelatorio()" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.5);border-radius:20px;color:var(--gold);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Relatório Mensal
+    </button>
+    <div class="header-badge">Sistema interno · 2026</div>
+  </div>
+  </div>
+
+  <!-- ── HOME SCREEN ── -->
+  <div id="home-screen" class="main" style="display:none;">
+
+    <!-- Boas-vindas -->
+    <div style="display:flex;align-items:center;gap:20px;margin-bottom:32px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:200px;">
+        <div style="font-size:13px;color:var(--gold);font-weight:500;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Bem-vindo,</div>
+        <div id="home-user-name" style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:500;color:var(--navy);line-height:1.1;">—</div>
+        <div id="home-data" style="font-size:12px;color:var(--text-muted);margin-top:4px;">—</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="text-align:right;">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--navy);">Gestão Contratos Recorrentes</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:1px;">Planilha Master · Sistema interno B&amp;C</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ilustração + cards -->
+    <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
+
+      <!-- Ilustração SVG -->
+      <div style="flex:0 0 auto;width:280px;">
+        <svg viewBox="0 0 280 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:12px;">
+          <!-- Fundo -->
+          <rect width="280" height="260" rx="12" fill="#1E3A5F"/>
+          <!-- Decoração geométrica -->
+          <circle cx="260" cy="20" r="60" fill="#C9A84C" opacity="0.08"/>
+          <circle cx="20" cy="240" r="80" fill="#C9A84C" opacity="0.06"/>
+          <!-- Documento principal -->
+          <rect x="60" y="40" width="120" height="155" rx="6" fill="#FFFFFF" opacity="0.97"/>
+          <rect x="60" y="40" width="120" height="28" rx="6" fill="#C9A84C"/>
+          <rect x="66" y="46" width="80" height="5" rx="2.5" fill="#1E3A5F" opacity="0.6"/>
+          <rect x="66" y="55" width="50" height="4" rx="2" fill="#1E3A5F" opacity="0.3"/>
+          <!-- Linhas de conteúdo -->
+          <rect x="72" y="80" width="96" height="3" rx="1.5" fill="#1E3A5F" opacity="0.15"/>
+          <rect x="72" y="89" width="72" height="3" rx="1.5" fill="#1E3A5F" opacity="0.12"/>
+          <rect x="72" y="98" width="88" height="3" rx="1.5" fill="#1E3A5F" opacity="0.12"/>
+          <rect x="72" y="112" width="96" height="3" rx="1.5" fill="#1E3A5F" opacity="0.15"/>
+          <rect x="72" y="121" width="60" height="3" rx="1.5" fill="#1E3A5F" opacity="0.12"/>
+          <rect x="72" y="130" width="80" height="3" rx="1.5" fill="#1E3A5F" opacity="0.12"/>
+          <!-- Linha separadora -->
+          <rect x="72" y="143" width="96" height="1" rx="0.5" fill="#C9A84C" opacity="0.4"/>
+          <!-- Assinatura simulada -->
+          <path d="M72 162 Q82 155 90 162 Q98 169 108 162" stroke="#C9A84C" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <rect x="72" y="168" width="40" height="2" rx="1" fill="#1E3A5F" opacity="0.2"/>
+          <!-- Selos / badges -->
+          <circle cx="152" cy="162" r="12" fill="#1E3A5F" opacity="0.08" stroke="#C9A84C" stroke-width="1.5"/>
+          <text x="152" y="167" text-anchor="middle" font-size="10" fill="#C9A84C" font-family="Georgia,serif">✓</text>
+          <!-- Documento secundário (atrás) -->
+          <rect x="100" y="55" width="110" height="140" rx="6" fill="#FFFFFF" opacity="0.3"/>
+          <!-- Tag "ATIVO" -->
+          <rect x="130" y="185" width="46" height="18" rx="9" fill="#C9A84C"/>
+          <text x="153" y="197" text-anchor="middle" font-size="9" font-weight="bold" fill="#1E3A5F" font-family="'DM Sans',Arial,sans-serif">ATIVO</text>
+          <!-- Nome empresa -->
+          <text x="140" y="232" text-anchor="middle" font-size="11" fill="#C9A84C" font-family="Georgia,serif" font-weight="600">Braga &amp; Campos</text>
+          <text x="140" y="247" text-anchor="middle" font-size="9" fill="#FFFFFF" opacity="0.5" font-family="'DM Sans',Arial,sans-serif" letter-spacing="1">ASSESSORIA CONTÁBIL</text>
+        </svg>
+      </div>
+
+      <!-- Cards de ação -->
+      <div style="flex:1;min-width:260px;display:flex;flex-direction:column;gap:12px;">
+
+        <button onclick="irParaFormulario()" style="display:flex;align-items:center;gap:14px;padding:16px 20px;background:var(--navy);border:none;border-radius:10px;cursor:pointer;text-align:left;font-family:'DM Sans',sans-serif;transition:opacity .2s;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+          <div style="width:38px;height:38px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E3A5F" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:600;color:#fff;">Novo Contrato</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.55);margin-top:1px;">Cadastrar novo cliente recorrente</div>
+          </div>
+        </button>
+
+        <button onclick="openFicha()" style="display:flex;align-items:center;gap:14px;padding:16px 20px;background:#fff;border:1px solid var(--border);border-radius:10px;cursor:pointer;text-align:left;font-family:'DM Sans',sans-serif;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+          <div style="width:38px;height:38px;background:#F3F1EC;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--navy);">Ficha do Cliente</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:1px;">Consultar dados e emitir ficha</div>
+          </div>
+        </button>
+
+        <button onclick="openAlteracao()" style="display:flex;align-items:center;gap:14px;padding:16px 20px;background:#fff;border:1px solid var(--border);border-radius:10px;cursor:pointer;text-align:left;font-family:'DM Sans',sans-serif;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+          <div style="width:38px;height:38px;background:#F3F1EC;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--navy);">Alteração de Situação</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:1px;">Saída, baixa ou processo de baixa</div>
+          </div>
+        </button>
+
+        <button onclick="openEdicao()" style="display:flex;align-items:center;gap:14px;padding:16px 20px;background:#fff;border:1px solid var(--border);border-radius:10px;cursor:pointer;text-align:left;font-family:'DM Sans',sans-serif;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+          <div style="width:38px;height:38px;background:#F3F1EC;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--navy);">Editar Cadastro</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:1px;">Alterar dados do cliente</div>
+          </div>
+        </button>
+
+        <button onclick="openRelatorio()" style="display:flex;align-items:center;gap:14px;padding:16px 20px;background:#fff;border:1px solid var(--border);border-radius:10px;cursor:pointer;text-align:left;font-family:'DM Sans',sans-serif;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+          <div style="width:38px;height:38px;background:#F3F1EC;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--navy);">Relatório Mensal</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:1px;">Novos, encerrados e em baixa</div>
+          </div>
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FORM SCREEN ── -->
+  <div id="form-screen" style="display:none;">
+  <div class="main">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <button onclick="voltarHome()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;background:transparent;border:1px solid var(--border);border-radius:20px;font-size:12px;color:var(--text-muted);cursor:pointer;font-family:'DM Sans',sans-serif;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Início
+      </button>
+    </div>
+    <div class="page-sub">Campos marcados com <span style="color:var(--gold);font-weight:500;">*</span> são obrigatórios.</div>
+
+    <div class="steps">
+      <div class="step-item"><div class="step-dot active" id="dot-1">1</div><div class="step-label active" id="lbl-1">Tipo de serviço</div></div>
+      <div class="step-line" id="line-1"></div>
+      <div class="step-item"><div class="step-dot" id="dot-2">2</div><div class="step-label" id="lbl-2">Dados do cliente</div></div>
+      <div class="step-line" id="line-2"></div>
+      <div class="step-item"><div class="step-dot" id="dot-3">3</div><div class="step-label" id="lbl-3">Contrato</div></div>
+      <div class="step-line" id="line-3"></div>
+      <div class="step-item"><div class="step-dot" id="dot-4">4</div><div class="step-label" id="lbl-4">Revisão &amp; exportar</div></div>
+    </div>
+
+    <!-- SCREEN 1 -->
+    <div class="screen active" id="screen-1">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-header-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+          <div class="card-header-title">Selecione o tipo de serviço</div>
+          <div class="card-header-sub">Passo 1 de 4</div>
+        </div>
+        <div class="card-body">
+          <div id="val-1" class="val-banner"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Selecione um tipo de serviço para continuar.</div>
+          <div class="service-grid">
+            <button class="service-btn" id="svc-09" onclick="selectService('09',this)"><div class="service-code">09</div><div class="service-name">Assessoria Contábil PJ</div></button>
+            <button class="service-btn disabled" onclick="comingSoon()"><div class="service-code">01</div><div class="service-name">Imposto de Renda PF</div><span class="service-coming">Em breve</span></button>
+            <button class="service-btn disabled" onclick="comingSoon()"><div class="service-code">DP</div><div class="service-name">Departamento Pessoal</div><span class="service-coming">Em breve</span></button>
+            <button class="service-btn disabled" onclick="comingSoon()"><div class="service-code">FIS</div><div class="service-name">Consultoria Fiscal</div><span class="service-coming">Em breve</span></button>
+            <button class="service-btn disabled" onclick="comingSoon()"><div class="service-code">END</div><div class="service-name">Endereço Fiscal / Coworking</div><span class="service-coming">Em breve</span></button>
+            <button class="service-btn disabled" onclick="comingSoon()"><div class="service-code">BPO</div><div class="service-name">BPO Financeiro</div><span class="service-coming">Em breve</span></button>
+          </div>
+          <div class="nav-row" style="border-top:none;margin-top:1.5rem;padding-top:0;justify-content:flex-end;">
+            <button class="btn btn-primary" onclick="validateAndGo(1)">Continuar <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 2 -->
+    <div class="screen" id="screen-2">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-header-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <div class="card-header-title">Dados do cliente</div>
+          <div class="card-header-sub">Passo 2 de 4</div>
+        </div>
+        <div class="card-body">
+          <div class="form-progress"><div class="form-progress-bar" style="width:25%"></div></div>
+          <div id="val-2" class="val-banner"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span id="val-2-msg"></span></div>
+
+          <div class="form-section-title">Identificação</div>
+          <div class="form-grid">
+            <div class="field" id="field-cnpj">
+              <label>CNPJ / CEI <span class="req">*</span></label>
+              <div class="cnpj-wrap">
+                <input type="text" id="f-cnpj" placeholder="00.000.000/0001-00" maxlength="18" oninput="onCNPJInput(this)">
+                <span class="cnpj-status" id="cnpj-icon"></span>
+              </div>
+              <div class="field-hint" id="cnpj-hint"></div>
+              <div class="field-error-msg">CNPJ ou CEI é obrigatório.</div>
+            </div>
+            <div class="field" id="field-cliente">
+              <label>Nome / Razão Social <span class="req">*</span></label>
+              <input type="text" id="f-cliente" placeholder="Preenchido automaticamente via CNPJ...">
+              <div class="field-hint" id="rs-hint"></div>
+              <div class="field-error-msg">Nome ou razão social é obrigatório.</div>
+            </div>
+          </div>
+
+          <div class="form-grid" style="margin-top:14px;">
+            <div class="field" id="field-ie">
+              <label>Inscrição Estadual <span class="req">*</span></label>
+              <div class="ie-wrap">
+                <div class="ie-toggle-row">
+                  <div class="ie-opt" id="ie-btn-isenta" onclick="ieSelect('isenta')">Isenta</div>
+                  <div class="ie-opt" id="ie-btn-numero" onclick="ieSelect('numero')">Informar número</div>
+                </div>
+                <div class="ie-number-row" id="ie-number-row">
+                  <input type="text" id="f-ie" placeholder="Somente números" style="flex:1;" oninput="this.value=this.value.replace(/\D/g,'');document.getElementById('f-ie-value').value=this.value;">
+                  <a id="sintegra-link" href="#" target="_blank" class="ie-sintegra-btn disabled" title="Consultar IE no SINTEGRA">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    SINTEGRA
+                  </a>
+                </div>
+                <div style="font-size:11px;color:var(--text-hint);margin-top:4px;" id="sintegra-hint"></div>
+              </div>
+              <input type="hidden" id="f-ie-value">
+              <div class="field-error-msg">Selecione Isenta ou informe o número da I.E.</div>
+            </div>
+            <div class="field" id="field-uf">
+              <label>UF <span class="req">*</span> <em style="font-size:10px;">(necessária para SINTEGRA)</em></label>
+              <select id="f-uf" onchange="updateSintegraLink()">
+                <option value="">Selecione o estado...</option>
+                <option value="AC">AC — Acre</option><option value="AL">AL — Alagoas</option>
+                <option value="AP">AP — Amapá</option><option value="AM">AM — Amazonas</option>
+                <option value="BA">BA — Bahia</option><option value="CE">CE — Ceará</option>
+                <option value="DF">DF — Distrito Federal</option><option value="ES">ES — Espírito Santo</option>
+                <option value="GO">GO — Goiás</option><option value="MA">MA — Maranhão</option>
+                <option value="MT">MT — Mato Grosso</option><option value="MS">MS — Mato Grosso do Sul</option>
+                <option value="MG">MG — Minas Gerais</option><option value="PA">PA — Pará</option>
+                <option value="PB">PB — Paraíba</option><option value="PR">PR — Paraná</option>
+                <option value="PE">PE — Pernambuco</option><option value="PI">PI — Piauí</option>
+                <option value="RJ">RJ — Rio de Janeiro</option><option value="RN">RN — Rio Grande do Norte</option>
+                <option value="RS">RS — Rio Grande do Sul</option><option value="RO">RO — Rondônia</option>
+                <option value="RR">RR — Roraima</option><option value="SC">SC — Santa Catarina</option>
+                <option value="SP">SP — São Paulo</option><option value="SE">SE — Sergipe</option>
+                <option value="TO">TO — Tocantins</option>
+              </select>
+              <div class="field-error-msg">Selecione a UF.</div>
+            </div>
+          </div>
+
+          <div class="form-section-title">Tributação &amp; ramo</div>
+          <div class="form-grid">
+            <div class="field" id="field-optante">
+              <label>Optante Simples / MEI <span class="req">*</span></label>
+              <input type="text" id="f-optante" readonly placeholder="Preenchido via consulta CNPJ..." style="background:#F0F4F9;color:var(--navy);font-weight:500;">
+              <input type="hidden" id="f-optante-value">
+              <div class="field-hint" id="optante-hint"></div>
+              <div class="field-error-msg">Aguarde a consulta do CNPJ.</div>
+            </div>
+            <div class="field" id="field-trib">
+              <label>Tributação <span class="req">*</span></label>
+              <select id="f-trib">
+                <option value="">Selecione...</option>
+                <option>Lucro Presumido</option>
+                <option>Lucro Real</option>
+                <option>Imune/Isenta</option>
+                <option>Exterior</option>
+                <option>Consórcio</option>
+                <option>Inativa</option>
+              </select>
+              <div class="field-hint" id="trib-hint"></div>
+              <div class="field-error-msg">Selecione a tributação.</div>
+            </div>
+            <div class="field" id="field-ramo">
+              <label>Ramo de atividade <span class="req">*</span></label>
+              <select id="f-ramo">
+                <option value="">Selecione...</option>
+                <option>Administração imobiliária</option><option>Advocacia</option>
+                <option>Agência de Turismo</option><option>Alimentação</option>
+                <option>Aluguel de imóveis próprios</option><option>Apoio empresarial</option>
+                <option>Arquitetura</option><option>Assessoria</option>
+                <option>Assistência Técnica</option><option>Associação</option>
+                <option>Cobrança</option><option>Comércio e Varejo</option>
+                <option>Comunicação</option><option>Confecção</option>
+                <option>Construtora</option><option>Consultoria</option>
+                <option>Contábil</option><option>Corretora</option>
+                <option>Desenvolvimento de Software</option><option>Editora</option>
+                <option>Energia</option><option>Engenharia</option>
+                <option>Ensino</option><option>Eventos</option>
+                <option>Fotografia</option><option>Gestão Empresarial</option>
+                <option>Holding</option><option>Imobiliária</option>
+                <option>Indústria</option><option>Intermediação de Negócios</option>
+                <option>Investimentos</option><option>Livraria</option>
+                <option>Logística</option><option>Marcenaria</option>
+                <option>Marketing</option><option>Medicina</option>
+                <option>Produtora</option><option>Psicologia</option>
+                <option>Publicidade</option><option>Representante Comercial</option>
+                <option>Saúde / Condicionamento Físico</option>
+                <option>Serviços administrativos e de gestão</option>
+                <option>Serviços de Engenharia</option>
+                <option>Serviços financeiros</option><option>Serviços jurídicos</option>
+                <option>Tecnologia</option><option>Transportes de Carga</option>
+                <option>Turismo</option><option>e-Commerce</option><option>Outro</option>
+              </select>
+              <div class="field-error-msg">Selecione o ramo de atividade.</div>
+            </div>
+          </div>
+
+          <div class="form-section-title">Conselho &amp; residência</div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Conselho profissional</label>
+              <div class="council-wrap">
+                <select id="f-conselho" onchange="onConselhoChange()">
+                  <option value="">Sem conselho</option>
+                  <optgroup label="Contabilidade &amp; Gestão"><option>CRC</option><option>CRA</option><option>CORECON</option></optgroup>
+                  <optgroup label="Direito"><option>OAB</option><option>OAB - RJ</option></optgroup>
+                  <optgroup label="Engenharia &amp; Arquitetura"><option>CREA</option><option>CORE - RJ</option><option>CAU</option><option>CONFEA</option></optgroup>
+                  <optgroup label="Saúde"><option>CRM</option><option>CREMERJ</option><option>CRO</option><option>CRN</option><option>CREFITO</option><option>CRFA</option><option>CRF</option><option>COREN</option><option>CFP</option><option>CRBM</option><option>CRTR</option></optgroup>
+                  <optgroup label="Finanças &amp; Mercado"><option>ANCORD</option><option>BACEN</option><option>CREFICI</option><option>CVM</option><option>SUSEP</option></optgroup>
+                  <optgroup label="Outros"><option>CRMV</option><option>CFMV</option><option>CRP</option><option>COFFITO</option><option>CFO</option><option>Outro (especificar)</option></optgroup>
+                </select>
+                <div class="council-other-row" id="council-other-row">
+                  <span class="council-other-label">Especifique:</span>
+                  <input type="text" id="f-conselho-outro" placeholder="Ex: CREFONO">
+                </div>
+              </div>
+            </div>
+            <div class="field" id="field-exterior">
+              <label>Sócio reside no exterior? <span class="req">*</span></label>
+              <div class="toggle-group">
+                <div class="toggle-opt" onclick="toggleOpt('exterior','Não',this)">Não</div>
+                <div class="toggle-opt" onclick="toggleOpt('exterior','Sim',this)">Sim</div>
+              </div>
+              <input type="hidden" id="f-exterior" value="">
+              <div class="field-error-msg">Informe se o sócio reside no exterior.</div>
+            </div>
+          </div>
+
+          <div class="nav-row">
+            <button class="btn btn-ghost" onclick="goTo(1)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Voltar</button>
+            <button class="btn btn-primary" onclick="validateAndGo(2)">Continuar <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3 -->
+    <div class="screen" id="screen-3">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-header-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div class="card-header-title">Dados do contrato</div>
+          <div class="card-header-sub">Passo 3 de 4</div>
+        </div>
+        <div class="card-body">
+          <div class="form-progress"><div class="form-progress-bar" style="width:75%"></div></div>
+          <div id="val-3" class="val-banner"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span id="val-3-msg"></span></div>
+
+          <div class="form-section-title">Responsável &amp; vigência</div>
+          <div class="form-grid triple">
+            <div class="field" id="field-empresa">
+              <label>Nossa empresa <span class="req">*</span></label>
+              <select id="f-empresa"><option value="">Selecione...</option><option>RCB</option><option>GME</option></select>
+              <div class="field-error-msg">Selecione a empresa responsável.</div>
+            </div>
+            <div class="field">
+              <label>Situação contratual</label>
+              <input type="text" value="Ativado" readonly>
+            </div>
+            <div class="field">
+              <label>Tipo de serviço</label>
+              <input type="text" value="Advice" readonly>
+            </div>
+          </div>
+          <div class="form-grid" style="margin-top:14px;">
+            <div class="field" id="field-inicio">
+              <label>Início do contrato <span class="req">*</span></label>
+              <div class="date-wrap">
+                <input type="date" id="f-inicio">
+                <div class="date-tip">💡 Se a empresa abriu conosco, a data de início é a data de abertura do CNPJ.</div>
+              </div>
+              <div class="field-error-msg">Informe a data de início.</div>
+            </div>
+            <div class="field"></div>
+          </div>
+
+          <div class="form-section-title">Escopo de serviços</div>
+          <div class="form-grid triple">
+            <div class="field" id="field-dp"><label>DP <span class="req">*</span></label><div class="toggle-group"><div class="toggle-opt" onclick="toggleOpt('dp','Sim',this)">Sim</div><div class="toggle-opt" onclick="toggleOpt('dp','Não',this)">Não</div></div><input type="hidden" id="f-dp"><div class="field-error-msg">Defina DP.</div></div>
+            <div class="field" id="field-fiscal"><label>Fiscal <span class="req">*</span></label><div class="toggle-group"><div class="toggle-opt" onclick="toggleOpt('fiscal','Sim',this)">Sim</div><div class="toggle-opt" onclick="toggleOpt('fiscal','Não',this)">Não</div></div><input type="hidden" id="f-fiscal"><div class="field-error-msg">Defina Fiscal.</div></div>
+            <div class="field" id="field-cont"><label>Contábil <span class="req">*</span></label><div class="toggle-group"><div class="toggle-opt" onclick="toggleOpt('cont','Sim',this)">Sim</div><div class="toggle-opt" onclick="toggleOpt('cont','Não',this)">Não</div></div><input type="hidden" id="f-cont"><div class="field-error-msg">Defina Contábil.</div></div>
+          </div>
+
+          <div class="form-section-title">Formalização</div>
+          <div class="form-grid">
+            <div class="field" id="field-contrato">
+              <label>Status do contrato <span class="req">*</span></label>
+              <select id="f-contrato"><option value="">Selecione...</option><option>Assinado</option><option>Pendente</option></select>
+              <div class="field-error-msg">Selecione o status.</div>
+            </div>
+            <div class="field" id="field-cadastro">
+              <label>Confirmação cadastro <span class="req">*</span> <em>(Domínio &amp; armazenamento de documentos)</em></label>
+              <div class="toggle-group">
+                <div class="toggle-opt" onclick="toggleOpt('cadastro','OK',this)">OK</div>
+                <div class="toggle-opt" onclick="toggleOpt('cadastro','Pendente',this)">Pendente</div>
+              </div>
+              <input type="hidden" id="f-cadastro">
+              <div class="field-error-msg">Confirme o cadastro.</div>
+            </div>
+            <div class="field span2">
+              <label>Observações</label>
+              <textarea id="f-obs" rows="2" placeholder="Informações complementares..."></textarea>
+            </div>
+          </div>
+
+          <div class="nav-row">
+            <button class="btn btn-ghost" onclick="goTo(2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Voltar</button>
+            <button class="btn btn-primary" onclick="validateAndGo(3)">Revisar &amp; exportar <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 4 -->
+    <div class="screen" id="screen-4">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-header-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="card-header-title">Revisão do cadastro</div>
+          <div class="card-header-sub">Passo 4 de 4</div>
+        </div>
+        <div class="card-body">
+          <div class="form-progress"><div class="form-progress-bar" style="width:100%"></div></div>
+          <div class="form-section-title">Confirme os dados antes de exportar</div>
+          <div class="review-grid" id="review-grid"></div>
+          <div class="export-box">
+            <div class="export-title">Linha para inserção na aba 09 — Assessoria Contábil PJ</div>
+            <div class="export-row" id="export-row">—</div>
+            <button class="copy-btn" id="copy-btn" onclick="copyAndLog()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Gravar na planilha
+            </button>
+            <div style="margin-top:10px;font-size:11px;color:var(--text-hint);line-height:1.5;">
+              Ao clicar, o contrato é gravado diretamente na planilha Master no SharePoint.<br>
+              O código (coluna A) é gerado automaticamente pela fórmula já existente.
+            </div>
+          </div>
+          <div class="nav-row">
+            <button class="btn btn-ghost" onclick="goTo(3)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Editar</button>
+            <button class="btn btn-reset" onclick="resetForm()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:3px;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-5"/></svg>
+              Novo contrato
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="protected-badge">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Acesso autenticado via Microsoft · Planilha Master protegida
+    </div>
+  </div>
+  </div><!-- /form-screen -->
+</div>
+
+<!-- ══════════════════════════════════════════
+     AUDIT LOG MODAL
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="log-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Log de Auditoria — Contratos Recorrentes</div>
+      <button class="modal-close" onclick="closeLog()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="log-toolbar">
+        <span class="log-count" id="log-count">0 registros</span>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-export-log" onclick="exportLog()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar CSV
+          </button>
+          <button class="btn-clear-log" onclick="clearLog()">Limpar log</button>
+        </div>
+      </div>
+      <div class="log-table-wrap">
+        <table class="log-table">
+          <thead><tr><th>#</th><th>Data / Hora</th><th>Usuário</th><th>E-mail</th><th>Ação</th><th>Cliente</th><th>CNPJ</th><th>Empresa</th><th>Início</th></tr></thead>
+          <tbody id="log-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════════════════════════════════
+     MSAL + APP SCRIPT
+══════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.10.0/lib/msal-browser.min.js"></script>
+<script>
+/* ════════════════════════════════════════════
+   [config]  CONFIGURAÇÃO — preencha antes de publicar
+   ════════════════════════════════════════════
+   1. No portal Azure (portal.azure.com):
+      > Azure Active Directory > App registrations > New registration
+      > Nome: BC - MASTER RECORRENTE  |  Tipo: Single-page application
+      > Redirect URI: URL onde este arquivo ficará hospedado
+      > Após criar: copie o Application (client) ID e o Directory (tenant) ID
+
+   2. Em API permissions, adicione:
+      > Microsoft Graph > User.Read (delegated)
+
+   3. Liste abaixo os e-mails autorizados:
+*/
+const CLIENT_ID  = 'fd69fb15-5bf6-4857-8dd2-41f8035d3f16';
+const TENANT_ID  = 'cf8aad47-db20-444c-bae2-96402cea47c6';
+
+const USUARIOS_AUTORIZADOS = [
+  'raphael.campos@bragacampos.com',
+  'eugenio.bastos@bragacampos.com',
+  'luanna.araujo@bragacampos.com',
+  'mayara.berdague@bragacampos.com',
+];
+/* ════════════════════════════════════════════ */
+
+// SharePoint — planilha Master
+const DRIVE_ID    = 'b!Xq4iV7egmUmYEehuJ6yqarJs2dwCCVBEtC3_kz24_6qtgSsX15dzQYuZOrBe8jiz';
+const FILE_ID     = '01UOSF7VYHU7VW7Z7G5HZOWBESOO4W6UE';
+const SHEET_NAME  = '09 - Assess. Cont. PJ';
+
+const msalConfig = {
+  auth: {
+    clientId: CLIENT_ID,
+    authority: `https://login.microsoftonline.com/${TENANT_ID}`,
+    redirectUri: 'https://rapha-campos-bc.github.io/bc-contratos/',
+  },
+  cache: { cacheLocation: 'sessionStorage' }
+};
+const msalInstance = new msal.PublicClientApplication(msalConfig);
+
+let currentUser = null;
+
+async function initAuth() {
+  await msalInstance.initialize();
+  const response = await msalInstance.handleRedirectPromise();
+  if (response) handleAuthResponse(response);
+  else {
+    const accounts = msalInstance.getAllAccounts();
+    if (accounts.length) handleAuthResponse({ account: accounts[0] });
+  }
+}
+
+function handleAuthResponse(response) {
+  const account = response.account;
+  const email = (account.username || '').toLowerCase();
+  if (!USUARIOS_AUTORIZADOS.includes(email)) {
+    showLoginError(`Acesso negado. A conta ${email} não está autorizada para este sistema.`);
+    msalInstance.logoutRedirect({ onRedirectNavigate: () => false });
+    return;
+  }
+  currentUser = {
+    name: account.name || email.split('@')[0],
+    email: email,
+    initials: (account.name || email).split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase()
+  };
+  showApp();
+}
+
+async function doLogin() {
+  document.getElementById('btn-login').disabled = true;
+  document.getElementById('btn-login').textContent = 'Aguardando Microsoft...';
+  try {
+    await msalInstance.loginRedirect({ scopes: ['User.Read', 'Sites.ReadWrite.All'] });
+  } catch(e) {
+    showLoginError('Erro ao conectar com a Microsoft. Tente novamente.');
+    document.getElementById('btn-login').disabled = false;
+    document.getElementById('btn-login').innerHTML = '<svg width="18" height="18" viewBox="0 0 21 21" fill="none"><rect width="10" height="10" fill="#F25022"/><rect x="11" width="10" height="10" fill="#7FBA00"/><rect y="11" width="10" height="10" fill="#00A4EF"/><rect x="11" y="11" width="10" height="10" fill="#FFB900"/></svg> Entrar com Microsoft';
+  }
+}
+
+function doLogout() {
+  currentUser = null;
+  msalInstance.logoutRedirect();
+}
+
+function showLoginError(msg) {
+  const el = document.getElementById('login-error');
+  el.textContent = msg; el.classList.add('show');
+}
+
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  const bar = document.getElementById('user-bar');
+  bar.classList.add('visible');
+  document.getElementById('user-name-bar').textContent = currentUser.name;
+  document.getElementById('user-email-bar').textContent = currentUser.email;
+  document.getElementById('user-avatar').textContent = currentUser.initials;
+  document.getElementById('app-screen').classList.add('visible');
+  // Show home screen
+  document.getElementById('home-user-name').textContent = currentUser.name.split(' ')[0];
+  const now = new Date();
+  document.getElementById('home-data').textContent = now.toLocaleDateString('pt-BR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  document.getElementById('home-screen').style.display = 'block';
+  document.getElementById('form-screen').style.display = 'none';
+}
+
+function irParaFormulario() {
+  document.getElementById('home-screen').style.display = 'none';
+  document.getElementById('form-screen').style.display = 'block';
+  goTo(1);
+}
+
+function voltarHome() {
+  document.getElementById('form-screen').style.display = 'none';
+  document.getElementById('home-screen').style.display = 'block';
+}
+
+/* ── Service ── */
+let selectedService = null;
+let cnpjTimer = null;
+
+function selectService(code, el) {
+  selectedService = code;
+  document.querySelectorAll('.service-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('val-1').classList.remove('show');
+}
+function comingSoon() { showToast('Este tipo de serviço estará disponível em breve.'); }
+
+/* ── Navigation ── */
+function goTo(step) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + step).classList.add('active');
+  for (let i = 1; i <= 4; i++) {
+    const dot = document.getElementById('dot-' + i);
+    const lbl = document.getElementById('lbl-' + i);
+    dot.classList.remove('active','done'); lbl.classList.remove('active');
+    if (i < step) { dot.classList.add('done'); dot.innerHTML = '✓'; }
+    else if (i === step) { dot.classList.add('active'); dot.innerHTML = i; lbl.classList.add('active'); }
+    else { dot.innerHTML = i; }
+    const line = document.getElementById('line-' + i);
+    if (line) line.classList.toggle('done', i < step);
+  }
+  if (step === 4) buildReview();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ── Validation ── */
+function validateAndGo(fromStep) {
+  if (fromStep === 1) {
+    if (!selectedService) { document.getElementById('val-1').classList.add('show'); return; }
+    goTo(2); return;
+  }
+  if (fromStep === 2) {
+    clearErrors(2);
+    const errs = [];
+    if (!gv('f-cnpj'))     { markError('field-cnpj');    errs.push('CNPJ / CEI'); }
+    if (!gv('f-cliente'))  { markError('field-cliente'); errs.push('Razão Social'); }
+    if (!gv('f-ie-value')) { markError('field-ie');      errs.push('Inscrição Estadual'); }
+    if (!gv('f-uf'))       { markError('field-uf');      errs.push('UF'); }
+    if (!gv('f-optante-value')) { markError('field-optante'); errs.push('Optante Simples/MEI'); }
+    if (!gv('f-trib'))     { markError('field-trib');    errs.push('Tributação'); }
+    if (!gv('f-ramo'))     { markError('field-ramo');    errs.push('Ramo de atividade'); }
+    if (!gv('f-exterior')) { markError('field-exterior');errs.push('Sócio no exterior'); }
+    if (errs.length) { showBanner(2, errs); return; }
+    goTo(3); return;
+  }
+  if (fromStep === 3) {
+    clearErrors(3);
+    const errs = [];
+    if (!gv('f-empresa'))  { markError('field-empresa');  errs.push('Nossa empresa'); }
+    if (!gv('f-inicio'))   { markError('field-inicio');   errs.push('Data de início'); }
+    if (!gv('f-dp'))       { markError('field-dp');       errs.push('DP'); }
+    if (!gv('f-fiscal'))   { markError('field-fiscal');   errs.push('Fiscal'); }
+    if (!gv('f-cont'))     { markError('field-cont');     errs.push('Contábil'); }
+    if (!gv('f-contrato')) { markError('field-contrato'); errs.push('Status do contrato'); }
+    if (!gv('f-cadastro')) { markError('field-cadastro'); errs.push('Confirmação cadastro'); }
+    if (errs.length) { showBanner(3, errs); return; }
+    goTo(4); return;
+  }
+}
+
+function markError(id) { const el = document.getElementById(id); if(el) el.classList.add('has-error'); }
+function clearErrors(step) {
+  document.querySelectorAll('#screen-'+step+' .field.has-error').forEach(f => f.classList.remove('has-error'));
+  document.getElementById('val-'+step).classList.remove('show');
+}
+function showBanner(step, errs) {
+  const msg = errs.length === 1
+    ? `Campo obrigatório não preenchido: ${errs[0]}.`
+    : `${errs.length} campos obrigatórios não preenchidos: ${errs.join(', ')}.`;
+  document.getElementById('val-'+step+'-msg').textContent = msg;
+  const b = document.getElementById('val-'+step);
+  b.classList.add('show');
+  b.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+document.addEventListener('input', e => {
+  const f = e.target.closest('.field');
+  if (f && f.classList.contains('has-error') && (e.target.value||'').trim()) f.classList.remove('has-error');
+});
+document.addEventListener('change', e => {
+  const f = e.target.closest('.field');
+  if (f && f.classList.contains('has-error') && (e.target.value||'').trim()) f.classList.remove('has-error');
+});
+
+/* ── Toggles ── */
+function toggleOpt(group, value, el) {
+  el.parentElement.querySelectorAll('.toggle-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('f-'+group).value = value;
+  const f = el.closest('.field');
+  if (f) f.classList.remove('has-error');
+}
+
+/* ── IE ── */
+function ieSelect(type) {
+  document.getElementById('ie-btn-isenta').classList.remove('sel-isenta');
+  document.getElementById('ie-btn-numero').classList.remove('sel-numero');
+  const row = document.getElementById('ie-number-row');
+  const hidden = document.getElementById('f-ie-value');
+  if (type === 'isenta') {
+    document.getElementById('ie-btn-isenta').classList.add('sel-isenta');
+    row.style.display = 'none';
+    document.getElementById('f-ie').value = '';
+    hidden.value = 'ISENTA';
+  } else {
+    document.getElementById('ie-btn-numero').classList.add('sel-numero');
+    row.style.display = 'flex';
+    hidden.value = document.getElementById('f-ie').value || '';
+  }
+  document.getElementById('field-ie').classList.remove('has-error');
+}
+
+/* ── SINTEGRA link by UF ── */
+const SINTEGRA_URLS = {
+  AC:'http://www.sefaznet.ac.gov.br/sintegra/servlet/hwsintegra',
+  AL:'http://www.sintegra.al.gov.br/',
+  AP:'https://www.sefaz.ap.gov.br/sate/seg/SEGf_AcessarFuncao.faces?fun=CAD-003',
+  AM:'https://www.sefaz.am.gov.br/sintegra/',
+  BA:'http://www.sintegra.ba.gov.br/',
+  CE:'https://cagec.sefaz.ce.gov.br/',
+  DF:'http://www.fazenda.df.gov.br/',
+  ES:'https://sintegra.sefaz.es.gov.br/',
+  GO:'https://www.sefaz.go.gov.br/sintegra/',
+  MA:'https://www.sintegra.ma.gov.br/',
+  MT:'http://www.sintegra.mt.gov.br/',
+  MS:'https://www.sefaz.ms.gov.br/sintegra/',
+  MG:'https://www.fazenda.mg.gov.br/empresas/cadastro_contribuintes/sintegra/',
+  PA:'https://app.sefa.pa.gov.br/sintegra/',
+  PB:'https://www.sefaz.pb.gov.br/sintegra/',
+  PR:'http://www.sintegra.pr.gov.br/',
+  PE:'https://sintegra.sefaz.pe.gov.br/',
+  PI:'https://www.sefaz.pi.gov.br/sintegra/',
+  RJ:'https://www.sintegra.fazenda.rj.gov.br/',
+  RN:'https://www.set.rn.gov.br/contentproducao/aplicacao/set_sintegra/sintegra/gerados/consulta.asp',
+  RS:'https://www.sintegra.rs.gov.br/',
+  RO:'https://www.sintegra.ro.gov.br/',
+  RR:'https://www.sefaz.rr.gov.br/',
+  SC:'https://www.sintegra.sc.gov.br/',
+  SP:'https://www.sintegra.fazenda.sp.gov.br/',
+  SE:'https://www.sintegra.se.gov.br/',
+  TO:'https://sintegra.sefaz.to.gov.br/'
+};
+
+function updateSintegraLink() {
+  const uf = gv('f-uf');
+  const cnpj = gv('f-cnpj').replace(/\D/g,'');
+  const link = document.getElementById('sintegra-link');
+  const hint = document.getElementById('sintegra-hint');
+  if (uf && SINTEGRA_URLS[uf]) {
+    link.href = SINTEGRA_URLS[uf];
+    link.classList.remove('disabled');
+    hint.textContent = `Abre o SINTEGRA ${uf} em nova aba. O CNPJ já preenchido pode ser usado na consulta.`;
+  } else {
+    link.href = '#';
+    link.classList.add('disabled');
+    hint.textContent = '';
+  }
+}
+
+/* ── CNPJ ── */
+function onCNPJInput(input) {
+  let v = input.value.replace(/\D/g,'');
+  if (v.length <= 14) {
+    v = v.replace(/^(\d{2})(\d)/,'$1.$2')
+         .replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3')
+         .replace(/\.(\d{3})(\d)/,'.$1/$2')
+         .replace(/(\d{4})(\d)/,'$1-$2');
+  }
+  input.value = v;
+  clearTimeout(cnpjTimer);
+  const digits = v.replace(/\D/g,'');
+  updateSintegraLink();
+  if (digits.length === 14) cnpjTimer = setTimeout(() => lookupCNPJ(digits), 600);
+  else { setIcon(''); setHint('cnpj',''); setHint('rs',''); }
+}
+
+async function lookupCNPJ(cnpj) {
+  setIcon('[...]'); setHint('cnpj','Consultando Receita Federal...','loading');
+  try {
+    const res = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    document.getElementById('f-cliente').value = data.razao_social || '';
+    if (data.uf) {
+      document.getElementById('f-uf').value = data.uf;
+      updateSintegraLink();
+    }
+    document.getElementById('field-cliente').classList.remove('has-error');
+    document.getElementById('field-cnpj').classList.remove('has-error');
+    setIcon('[OK]'); setHint('cnpj','CNPJ encontrado.','ok');
+    setHint('rs','Preenchido automaticamente — edite se necessário.','ok');
+
+    // Optante Simples / MEI
+    const isMei     = !!data.opcao_pelo_mei;
+    const isSimples = !!data.opcao_pelo_simples;
+    const tribSel   = document.getElementById('f-trib');
+    const optDisplay = document.getElementById('f-optante');
+    const optHidden  = document.getElementById('f-optante-value');
+    const optHint    = document.getElementById('optante-hint');
+    const tribHint   = document.getElementById('trib-hint');
+
+    if (isMei) {
+      optDisplay.value = 'MEI';
+      optHidden.value  = 'MEI';
+      optHint.textContent = 'Retorno da Receita Federal.';
+      optHint.className = 'field-hint field-ok';
+      // Auto-set tributacao and lock
+      tribSel.value = 'MEI';
+      if (!tribSel.querySelector('option[value="MEI"]')) {
+        const opt = document.createElement('option');
+        opt.value = opt.textContent = 'MEI';
+        tribSel.appendChild(opt);
+        tribSel.value = 'MEI';
+      }
+      tribSel.disabled = true;
+      tribHint.textContent = 'Preenchido automaticamente — MEI.';
+      tribHint.className = 'field-hint field-ok';
+    } else if (isSimples) {
+      optDisplay.value = 'Optante';
+      optHidden.value  = 'Optante';
+      optHint.textContent = 'Optante pelo Simples Nacional.';
+      optHint.className = 'field-hint field-ok';
+      // Auto-set tributacao and lock
+      if (!tribSel.querySelector('option[value="Simples Nacional"]')) {
+        const opt = document.createElement('option');
+        opt.value = opt.textContent = 'Simples Nacional';
+        tribSel.insertBefore(opt, tribSel.firstChild);
+      }
+      tribSel.value = 'Simples Nacional';
+      tribSel.disabled = true;
+      tribHint.textContent = 'Preenchido automaticamente — Simples Nacional.';
+      tribHint.className = 'field-hint field-ok';
+    } else {
+      optDisplay.value = 'Não Optante';
+      optHidden.value  = 'Não Optante';
+      optHint.textContent = 'Não optante pelo Simples/MEI — selecione a tributação.';
+      optHint.className = 'field-hint field-err';
+      tribSel.value = '';
+      tribSel.disabled = false;
+      tribHint.textContent = 'Selecione a tributação correta.';
+      tribHint.className = 'field-hint';
+    }
+    document.getElementById('field-optante').classList.remove('has-error');
+    document.getElementById('field-trib').classList.remove('has-error');
+
+  } catch {
+    setIcon('[!]'); setHint('cnpj','CNPJ não localizado. Preencha manualmente.','err');
+    document.getElementById('f-cliente').value = '';
+    document.getElementById('f-cliente').focus();
+    // Reset optante and tributacao
+    document.getElementById('f-optante').value = '';
+    document.getElementById('f-optante-value').value = '';
+    document.getElementById('f-trib').disabled = false;
+  }
+}
+
+function setIcon(ico) { document.getElementById('cnpj-icon').textContent = ico; }
+function setHint(id, msg, type) {
+  const el = document.getElementById(id === 'cnpj' ? 'cnpj-hint' : 'rs-hint');
+  el.textContent = msg;
+  el.className = 'field-hint'+(type?' field-'+type:'');
+}
+
+/* ── Conselho ── */
+function onConselhoChange() {
+  const sel = document.getElementById('f-conselho').value;
+  const row = document.getElementById('council-other-row');
+  row.style.display = sel === 'Outro (especificar)' ? 'flex' : 'none';
+  if (sel !== 'Outro (especificar)') document.getElementById('f-conselho-outro').value = '';
+}
+function getConselho() {
+  const sel = document.getElementById('f-conselho').value;
+  return sel === 'Outro (especificar)'
+    ? (document.getElementById('f-conselho-outro').value.trim() || 'Outro')
+    : sel;
+}
+
+function gv(id) { const el = document.getElementById(id); return el ? (el.value||'').trim() : ''; }
+
+/* ── Review ── */
+function buildReview() {
+  const ieVal = gv('f-ie-value');
+  const conselho = getConselho();
+  const fields = [
+    ['CNPJ / CEI',gv('f-cnpj')],['Cliente / Razão Social',gv('f-cliente')],
+    ['UF',gv('f-uf')],['Inscrição Estadual',ieVal],
+    ['Optante Simples/MEI',gv('f-optante-value')],['Tributação',gv('f-trib')],
+    ['Ramo de atividade',gv('f-ramo')],
+    ['Conselho',conselho],['Sócio no exterior',gv('f-exterior')],
+    ['Nossa empresa',gv('f-empresa')],['Situação','Ativado'],
+    ['Tipo de serviço','Advice'],['Início',gv('f-inicio')],
+    ['DP',gv('f-dp')],['Fiscal',gv('f-fiscal')],['Contábil',gv('f-cont')],
+    ['Status contrato',gv('f-contrato')],['Confirmação cadastro',gv('f-cadastro')],
+    ['Observações',gv('f-obs')],
+  ];
+  document.getElementById('review-grid').innerHTML = fields.map(([l,v]) =>
+    `<div class="review-item"><div class="review-label">${l}</div><div class="review-value${!v?' empty':''}">${v||'—'}</div></div>`
+  ).join('');
+  const cols = [
+    'Ativado',gv('f-inicio'),'',gv('f-empresa'),gv('f-cliente'),
+    gv('f-ramo'),gv('f-dp'),gv('f-fiscal'),gv('f-cont'),'Advice',
+    gv('f-trib'),gv('f-cnpj'),ieVal,conselho,
+    gv('f-exterior'),gv('f-contrato'),gv('f-obs'),gv('f-cadastro'),
+    gv('f-optante-value')
+  ];
+  document.getElementById('export-row').textContent = cols.join('\t');
+}
+
+/* ── SharePoint write + log ── */
+async function copyAndLog() {
+  const btn = document.getElementById('copy-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Gravando...';
+
+  try {
+    // 1. Get access token
+    const tokenResp = await msalInstance.acquireTokenSilent({
+      scopes: ['User.Read', 'Sites.ReadWrite.All'],
+      account: msalInstance.getAllAccounts()[0]
+    });
+    const token = tokenResp.accessToken;
+
+    // 2. Get current sheet to find last used row
+    const sessionResp = await fetch(
+      `https://graph.microsoft.com/v1.0/drives/${DRIVE_ID}/items/${FILE_ID}/workbook/createSession`,
+      {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ persistChanges: true })
+      }
+    );
+    const session = await sessionResp.json();
+    const sessionId = session.id;
+
+    // 3. Build row values for Tabela6 (B to S — Code/A is auto by table formula)
+    const ieVal = gv('f-ie-value');
+    const conselho = getConselho();
+    const rowValues = [
+      null,                        // A - Code (let table formula fill automatically)
+      gv('f-sit') || 'Ativado',  // B - Sit. Contratual
+      gv('f-inicio'),              // C - Início Contrato
+      '',                          // D - Final Contrato
+      gv('f-empresa'),             // E - Nossa Empresa
+      gv('f-cliente'),             // F - CLIENTE
+      gv('f-ramo'),                // G - Ramo de Atividade
+      gv('f-dp'),                  // H - DP
+      gv('f-fiscal'),              // I - Fiscal
+      gv('f-cont'),                // J - Cont
+      'Advice',                    // K - Serviço
+      gv('f-trib'),                // L - Tributação
+      gv('f-cnpj'),                // M - CNPJ/CPF/CEI
+      ieVal,                       // N - I.E.
+      conselho,                    // O - Conselho de Classe
+      gv('f-exterior'),            // P - Sócio reside exterior
+      gv('f-contrato'),            // Q - Contrato
+      gv('f-obs'),                 // R - Observações
+      gv('f-cadastro'),            // S - Confirmação Cadastro
+      gv('f-optante-value')        // T - Optante Simples/MEI
+    ];
+
+    // 4. Append row directly to Tabela6
+    const writeResp = await fetch(
+      `https://graph.microsoft.com/v1.0/drives/${DRIVE_ID}/items/${FILE_ID}/workbook/tables('Tabela6')/rows/add`,
+      {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'workbook-session-id': sessionId },
+        body: JSON.stringify({ values: [rowValues] })
+      }
+    );
+
+    if (!writeResp.ok) {
+      const err = await writeResp.json();
+      throw new Error(err.error?.message || 'Erro ao gravar na tabela');
+    }
+
+    const newRowData = await writeResp.json();
+    // Table index is 0-based body rows; actual sheet row = header(1) + index + 1
+    const nextRow = (newRowData.index || 0) + 2;
+
+    // 5. Apply font formatting Calibri 11 to new row
+    await fetch(
+      `https://graph.microsoft.com/v1.0/drives/${DRIVE_ID}/items/${FILE_ID}/workbook/worksheets('${encodeURIComponent(SHEET_NAME)}')/range(address='A${nextRow}:T${nextRow}')/format/font`,
+      {
+        method: 'PATCH',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'workbook-session-id': sessionId },
+        body: JSON.stringify({ name: 'Calibri', size: 11 })
+      }
+    );
+
+    // 6. Close session
+    await fetch(
+      `https://graph.microsoft.com/v1.0/drives/${DRIVE_ID}/items/${FILE_ID}/workbook/closeSession`,
+      {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'workbook-session-id': sessionId }
+      }
+    );
+
+    // 7. Log + feedback
+    addLogEntry('INSERÇÃO');
+    btn.classList.add('copied');
+    btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Gravado na planilha!';
+    showToast(`[OK] Contrato de ${gv('f-cliente')} gravado na linha ${nextRow} da planilha Master.`);
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v14a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Gravar na planilha';
+    }, 4000);
+
+  } catch(e) {
+    console.error(e);
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Gravar na planilha';
+    showToast('[!] Erro ao gravar: ' + e.message + '. Use o botão copiar como alternativa.');
+    // fallback: copy to clipboard
+    navigator.clipboard.writeText(document.getElementById('export-row').textContent);
+  }
+}
+
+/* ── Audit log (localStorage) ── */
+const LOG_KEY = 'bc_contratos_log';
+
+function getLog() {
+  try { return JSON.parse(localStorage.getItem(LOG_KEY) || '[]'); } catch { return []; }
+}
+function saveLog(entries) {
+  localStorage.setItem(LOG_KEY, JSON.stringify(entries));
+}
+
+function addLogEntry(action) {
+  const entries = getLog();
+  const entry = {
+    id: Date.now(),
+    timestamp: new Date().toLocaleString('pt-BR'),
+    timestamp_iso: new Date().toISOString(),
+    user_name: currentUser ? currentUser.name : '—',
+    user_email: currentUser ? currentUser.email : '—',
+    action,
+    cliente: gv('f-cliente'),
+    cnpj: gv('f-cnpj'),
+    empresa: gv('f-empresa'),
+    inicio: gv('f-inicio'),
+    tributacao: gv('f-trib'),
+    servico_tipo: selectedService || '09',
+  };
+  entries.unshift(entry);
+  saveLog(entries);
+}
+
+function openLog() {
+  const entries = getLog();
+  const tbody = document.getElementById('log-tbody');
+  document.getElementById('log-count').textContent = `${entries.length} registro${entries.length !== 1 ? 's' : ''}`;
+  if (!entries.length) {
+    tbody.innerHTML = '<tr><td colspan="9" class="log-empty">Nenhum registro ainda.</td></tr>';
+  } else {
+    tbody.innerHTML = entries.map((e,i) => `
+      <tr>
+        <td style="color:var(--text-hint);">${entries.length - i}</td>
+        <td style="white-space:nowrap;">${e.timestamp}</td>
+        <td style="font-weight:500;">${e.user_name}</td>
+        <td style="color:var(--text-muted);font-size:11px;">${e.user_email}</td>
+        <td><span class="log-tag insert">${e.action}</span></td>
+        <td>${e.cliente||'—'}</td>
+        <td style="font-size:11px;color:var(--text-muted);">${e.cnpj||'—'}</td>
+        <td>${e.empresa||'—'}</td>
+        <td>${e.inicio||'—'}</td>
+      </tr>`
+    ).join('');
+  }
+  document.getElementById('log-modal').classList.add('open');
+}
+
+function closeLog() { document.getElementById('log-modal').classList.remove('open'); }
+
+function exportLog() {
+  const entries = getLog();
+  if (!entries.length) { showToast('Nenhum registro para exportar.'); return; }
+  const header = ['#','Data/Hora','Usuário','E-mail','Ação','Cliente','CNPJ','Empresa','Início','Tributação','Tipo'];
+  const rows = entries.map((e,i) => [
+    entries.length-i, e.timestamp, e.user_name, e.user_email,
+    e.action, e.cliente, e.cnpj, e.empresa, e.inicio, e.tributacao, e.servico_tipo
+  ]);
+  const csv = [header, ...rows].map(r => r.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(';')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `BC_Log_Contratos_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+function clearLog() {
+  if (!confirm('Tem certeza que deseja limpar todo o log de auditoria? Esta ação não pode ser desfeita.')) return;
+  saveLog([]);
+  openLog();
+  showToast('Log de auditoria limpo.');
+}
+
+/* ── Reset ── */
+function resetForm() {
+  document.querySelectorAll('input[type="text"],input[type="date"],textarea').forEach(e => { if(!e.hasAttribute('readonly')) e.value=''; });
+  document.querySelectorAll('select').forEach(e => e.selectedIndex = 0);
+  document.querySelectorAll('input[type="hidden"]').forEach(e => e.value='');
+  document.querySelectorAll('.toggle-opt').forEach(e => e.classList.remove('selected'));
+  document.querySelectorAll('.service-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('ie-btn-isenta').classList.remove('sel-isenta');
+  document.getElementById('ie-btn-numero').classList.remove('sel-numero');
+  document.getElementById('ie-number-row').style.display = 'none';
+  document.getElementById('council-other-row').style.display = 'none';
+  document.querySelectorAll('.val-banner').forEach(b => b.classList.remove('show'));
+  document.querySelectorAll('.field.has-error').forEach(f => f.classList.remove('has-error'));
+  setIcon(''); setHint('cnpj',''); setHint('rs','');
+  document.getElementById('sintegra-hint').textContent = '';
+  document.getElementById('sintegra-link').classList.add('disabled');
+  document.getElementById('sintegra-link').href = '#';
+  // Reset optante and unlock tributacao
+  document.getElementById('f-optante').value = '';
+  document.getElementById('f-optante-value').value = '';
+  document.getElementById('optante-hint').textContent = '';
+  document.getElementById('f-trib').disabled = false;
+  document.getElementById('trib-hint').textContent = '';
+  selectedService = null;
+  voltarHome();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+
+/* ══════════════════════════════════════════
+   ALTERAÇÃO DE SITUAÇÃO
+══════════════════════════════════════════ */
+let altRowIndex = null;
+let altTipoSel  = null;
+
+function openAlteracao() {
+  altRowIndex = null; altTipoSel = null;
+  document.getElementById('alt-code').value = '';
+  document.getElementById('alt-nome').value = '';
+  document.getElementById('alt-busca-hint').textContent = '';
+  document.getElementById('alt-cliente-info').style.display = 'none';
+  document.getElementById('alt-opcoes').style.display = 'none';
+  document.getElementById('alt-status').style.display = 'none';
+  document.querySelectorAll('.alt-tipo-btn').forEach(b => b.style.outline = 'none');
+  document.getElementById('alteracao-modal').classList.add('open');
+}
+function closeAlteracao() { document.getElementById('alteracao-modal').classList.remove('open'); }
+
+async function buscarClienteAlt() {
+  const code = document.getElementById('alt-code').value.trim();
+  const nome = document.getElementById('alt-nome').value.trim().toLowerCase();
+  const hint = document.getElementById('alt-busca-hint');
+  if (!code && !nome) { hint.textContent = 'Informe ao menos o código.'; return; }
+  hint.textContent = 'Buscando...'; hint.style.color = '#8FA3B8';
+  try {
+    const token = await getToken();
+    const resp = await fetch(
+      `https://graph.microsoft.com/v1.0/drives/${DRIVE_ID}/items/${FILE_ID}/workbook/tables('Tabela6')/rows`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    const data = await resp.json();
+    const rows = data.value || [];
+    let found = null, foundIdx = null;
+    for (let i = 0; i < rows.length; i++) {
+      const v = rows[i].values[0];
+      const rowCode = String(v[0] || '').trim();
+      const rowNome = String(v[5] || '').trim().toLowerCase();
+      if (code && rowCode === code) { found = v; foundIdx = i; break; }
+      if (!code && nome && rowNome.includes(nome)) { found = v; foundIdx = i; break; }
+    }
+    if (!found) { hint.textContent = 'Cliente não encontrado.'; hint.style.color = '#8C1E1E'; return; }
+    altRowIndex = foundIdx;
+    hint.textContent = 'Cliente encontrado.'; hint.style.color = '#2D6A4F';
+    document.getElementById('alt-cli-nome').textContent = String(found[5] || '—');
+    document.getElementById('alt-cli-info').textContent = `CNPJ: ${found[12] || '—'} · Empresa: ${found[4] || '—'}`;
+    document.getElementById('alt-sit-atual').textContent = `Situação atual: ${found[1] || '—'}`;
+    document.getElementById('alt-cliente-info').style.display = 'block';
+    document.getElementById('alt-opcoes').style.display = 'block';
+    document.getElementById('alt-status').style.display = 'none';
+    // Reset tipo
+    altTipoSel = null;
+    document.querySelectorAll('.alt-tipo-btn').forEach(b => b.style.outline = 'none');
+    document.getElementById('alt-campo-data').style.display = 'none';
+    document.getElementById('alt-campo-obs').style.display = 'none';
+  } catch(e) {
+    hint.textContent = 'Erro ao buscar: ' + e.message; hint.style.color = '#8C1E1E';
+  }
+}
+
+function selectAltTipo(tipo) {
+  altTipoSel = tipo;
+  document.querySelectorAll('.alt-tipo-btn').forEach(b => b.style.outline = 'none');
+  document.getElementById(`alt-btn-${tipo}`).style.outline = '2px solid var(--gold)';
+  document.getElementById('alt-campo-data').style.display = (tipo === 'saida' || tipo === 'definitiva') ? 'block' : 'none';
+  document.getElementById('alt-campo-obs').style.display = (tipo === 'baixa' || tipo === 'definitiva') ? 'block' : 'none';
+  document.getElementById('alt-obs').value = '';
+  document.getElementById('alt-data').value = '';
+  document.getElementById('alt-status').style.display = 'none';
+}
+
+async function confirmarAlteracao() {
+  if (altRowIndex === null) { showToast('Busque um cliente primeiro.'); return; }
+  if (!altTipoSel) { showToast('Selecione o tipo de alteração.'); return; }
+  const data = document.getElementById('alt-data').value;
+  if ((altTipoSel === 'saida' || altTipoSel === 'definitiva') && !data) {
+    showToast('Informe a data de saída.'); return;
+  }
+  const obsNova = document.getElementById('alt-obs').value.trim();
+  const btn = document.getElementById('alt-confirmar-btn');
+  const statusEl = document.getElementById('alt-status');
+  btn.disabled = true; btn.textContent = 'Salvando...';
+  statusEl.style.display = 'block'; statusEl.style.color = 'var(--gold)';
+  statusEl.textContent = '⏳ Conectando ao SharePoint...';
+  try {
+    const token = await getToken();
+    // Open session
+    const sessResp = await fetch(
+      `https://graph.microsoft.com/v1.0/drives/${DRIVE_ID}/items/${FILE_ID}/workbook/createSession`,
+      { method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ persistChanges: true }) }
+    );
+    const sess = await sessResp.json();
+    const sid = sess.id;
+    const hdrs = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', 'workbook-session-id': sid };
+
+    // Get current row to read existing obs
+    const rowResp = await fetch(
+      `https://graph.microsoft.com/v1.0/drives/${DRIVE_ID}/items/${FILE_ID}/workbook/tables('Tabela6')/rows/itemAt(index=${altRowIndex})`,
+      { headers: hdrs }
+    );
+    const rowData = await rowResp.json();
+    const v = rowData.values[0];
+    const obsAtual = String(v[17] || '').trim();
+
+    // Build new values
+    let novaSit = v[1], novaData = v[3], novaObs = obsAtual;
+    if (altTipoSel === 'saida') { novaSit = 'Desativado'; novaData = data; }
+    if (altTipoSel === 'baixa') { novaSit = 'Em Processo de Baixa'; }
+    if (altTipoSel === 'definitiva') { novaSit = 'Desativado'; novaData = data; }
+    if (obsNova) novaObs = obsAtual ? obsAtual + '; ' + obsNova : obsNova;
+
+    // Patch the row
+    const newValues = [...v];
+    newValues[1]  = novaSit;
+    newValues[3]  = novaData || v[3];
+    newValues[17] = novaObs;
+
+    statusEl.textContent = '⏳ Gravando alteração...';
+    await fetch(
+      `https://graph.microsoft.com/v1.0/drives/${DRIVE_ID}/items/${FILE_ID}/workbook/tables('Tabela6')/rows/itemAt(index=${altRowIndex})`,
+      { method: 'PATCH', headers: hdrs, body: JSON.stringify({ values: [newValues] }) }
+    );
+
+    // Close session
+    await fetch(`https://graph.microsoft.com/v1.0/drives/${DRIVE_ID}/items/${FILE_ID}/workbook/closeSession`,
+      { method: 'POST', headers: hdrs });
+
+    // Log
+    const tipoLabel = { saida: 'SAÍDA CLIENTE', baixa: 'EM PROCESSO DE BAIXA', definitiva: 'BAIXA DEFINITIVA' };
+    addLogEntryCustom(tipoLabel[altTipoSel], String(v[5] || ''), String(v[12] || ''), String(v[4] || ''));
+
+    statusEl.style.color = '#2D6A4F';
+    statusEl.textContent = `✅ Alteração gravada com sucesso!`;
+    showToast(`Situação de ${v[5]} atualizada para "${novaSit}".`);
+    setTimeout(() => closeAlteracao(), 2000);
+  } catch(e) {
+    statusEl.style.color = '#8C1E1E';
+    statusEl.textContent = '❌ Erro: ' + e.message;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Confirmar Alteração';
+  }
+}
+
+/* ══════════════════════════════════════════
+   EDITAR CADASTRO
+══════════════════════════════════════════ */
+let edRowIndex = null;
+
+function openEdicao() {
+  edRowIndex = null;
+  document.getElementById('ed-code').value = '';
+  document.getElementById('ed-nome').value = '';
+  document.getElementById('ed-busca-hint').textContent = '';
+  document.getElementById('ed-form').style.display = 'none';
+  document.getElementById('ed-status').style.display = 'none';
+  document.getElementById('edicao-modal').classList.add('open');
+}
+function closeEdicao() { document.getElementById('edicao-modal').classList.remove('open'); }
+
+function toInputDate(raw) {
+  if (!raw) return '';
+  if (typeof raw === 'number') {
+    const d = new Date(Math.round((raw - 25569) * 86400) * 1000);
+    return d.toISOString().split('T')[0];
+  }
+  const s = String(raw).trim();
+  // M/D/YYYY
+  const us = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (us) return `${us[3]}-${String(us[1]).padStart(2,'0')}-${String(us[2]).padStart(2,'0')}`;
+  // ISO
+  if (s.match(/^\d{4}-\d{2}-\d{2}/)) return s.split('T')[0];
+  return '';
+}
+
+async function buscarClienteEd() {
+  const code = document.getElementById('ed-code').value.trim();
+  const nome = document.getElementById('ed-nome').value.trim().toLowerCase();
+  const hint = document.getElementById('ed-busca-hint');
+  if (!code && !nome) { hint.textContent = 'Informe ao menos o código.'; return; }
+  hint.textContent = 'Buscando...'; hint.style.color = '#8FA3B8';
+  try {
+    const token = await getToken();
+    const resp = await fetch(
+      `https://graph.microsoft.com/v1.0/drives/${DRIVE_ID}/items/${FILE_ID}/workbook/tables('Tabela6')/rows`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    const data = await resp.json();
+    const rows = data.value || [];
+    let found = null, foundIdx = null;
+    for (let i = 0; i < rows.length; i++) {
+      const v = rows[i].values[0];
+      const rowCode = String(v[0] || '').trim();
+      const rowNome = String(v[5] || '').trim().toLowerCase();
+      if (code && rowCode === code) { found = v; foundIdx = i; break; }
+      if (!code && nome && rowNome.includes(nome)) { found = v; foundIdx = i; break; }
+    }
+    if (!found) { hint.textContent = 'Cliente não encontrado.'; hint.style.color = '#8C1E1E'; return; }
+    edRowIndex = foundIdx;
+    hint.textContent = 'Cliente encontrado.'; hint.style.color = '#2D6A4F';
+
+    // Populate form
+    document.getElementById('ed-cli-nome').textContent = String(found[5] || '—');
+    document.getElementById('ed-cli-info').textContent = `Cód: ${found[0]} · CNPJ: ${found[12] || '—'}`;
+    document.getElementById('ed-empresa').value = String(found[4] || 'RCB');
+    document.getElementById('ed-ramo').value    = String(found[6] || '');
+    document.getElementById('ed-dp').value      = String(found[7] || 'Sim');
+    document.getElementById('ed-fiscal').value  = String(found[8] || 'Sim');
+    document.getElementById('ed-cont').value    = String(found[9] || 'Sim');
+    document.getElementById('ed-trib').value    = String(found[11] || '');
+    document.getElementById('ed-ie').value      = String(found[13] || '');
+    document.getElementById('ed-conselho').value= String(found[14] || '');
+    document.getElementById('ed-exterior').value= String(found[15] || 'Não');
+    document.getElementById('ed-contrato').value= String(found[16] || 'Assinado');
+    document.getElementById('ed-cadastro').value= String(found[18] || 'OK');
+    document.getElementById('ed-optante').value = String(found[19] || '');
+    const obsAtual = String(found[17] || '');
+    document.getElementById('ed-obs').value = '';
+    if (obsAtual) {
+      document.getElementById('ed-obs-atual').textContent = 'Obs. atual: ' + obsAtual;
+      document.getElementById('ed-obs-atual').style.display = 'block';
+    } else {
+      document.getElementById('ed-obs-atual').style.display = 'none';
+    }
+    document.getElementById('ed-form').style.display = 'block';
+    document.getElementById('ed-status').style.display = 'none';
+  } catch(e) {
+    hint.textContent = 'Erro ao buscar: ' + e.message; hint.style.color = '#8C1E1E';
+  }
+}
+
+async function confirmarEdicao() {
+  if (edRowIndex === null) { showToast('Busque um cliente primeiro.'); return; }
+  const statusEl = document.getElementById('ed-status');
+  statusEl.style.display = 'block'; statusEl.style.color = 'var(--gold)';
+  statusEl.textContent = '⏳ Salvando alterações...';
+  try {
+    const token = await getToken();
+    const sessResp = await fetch(
+      `https://graph.microsoft.com/v1.0/drives/${DRIVE_ID}/items/${FILE_ID}/workbook/createSession`,
+      { method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ persistChanges: true }) }
+    );
+    const sess = await sessResp.json();
+    const sid = sess.id;
+    const hdrs = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', 'workbook-session-id': sid };
+
+    // Get current row
+    const rowResp = await fetch(
+      `https://graph.microsoft.com/v1.0/drives/${DRIVE_ID}/items/${FILE_ID}/workbook/tables('Tabela6')/rows/itemAt(index=${edRowIndex})`,
+      { headers: hdrs }
+    );
+    const rowData = await rowResp.json();
+    const v = [...rowData.values[0]];
+
+    // Append obs if new text provided
+    const obsNova = document.getElementById('ed-obs').value.trim();
+    const obsAtual = String(v[17] || '').trim();
+    const novaObs = obsNova ? (obsAtual ? obsAtual + '; ' + obsNova : obsNova) : obsAtual;
+
+    v[4]  = document.getElementById('ed-empresa').value;
+    v[6]  = document.getElementById('ed-ramo').value;
+    v[7]  = document.getElementById('ed-dp').value;
+    v[8]  = document.getElementById('ed-fiscal').value;
+    v[9]  = document.getElementById('ed-cont').value;
+    v[11] = document.getElementById('ed-trib').value;
+    v[13] = document.getElementById('ed-ie').value;
+    v[14] = document.getElementById('ed-conselho').value;
+    v[15] = document.getElementById('ed-exterior').value;
+    v[16] = document.getElementById('ed-contrato').value;
+    v[17] = novaObs;
+    v[18] = document.getElementById('ed-cadastro').value;
+    v[19] = document.getElementById('ed-optante').value;
+
+    await fetch(
+      `https://graph.microsoft.com/v1.0/drives/${DRIVE_ID}/items/${FILE_ID}/workbook/tables('Tabela6')/rows/itemAt(index=${edRowIndex})`,
+      { method: 'PATCH', headers: hdrs, body: JSON.stringify({ values: [v] }) }
+    );
+    await fetch(`https://graph.microsoft.com/v1.0/drives/${DRIVE_ID}/items/${FILE_ID}/workbook/closeSession`,
+      { method: 'POST', headers: hdrs });
+
+    addLogEntryCustom('EDIÇÃO DE CADASTRO', String(v[5] || ''), String(v[12] || ''), String(v[4] || ''));
+    statusEl.style.color = '#2D6A4F';
+    statusEl.textContent = '✅ Cadastro atualizado com sucesso!';
+    showToast(`Cadastro de ${v[5]} atualizado.`);
+    setTimeout(() => closeEdicao(), 2000);
+  } catch(e) {
+    statusEl.style.color = '#8C1E1E';
+    statusEl.textContent = '❌ Erro: ' + e.message;
+  }
+}
+
+/* ══════════════════════════════════════════
+   FICHA DO CLIENTE
+══════════════════════════════════════════ */
+let fichaData = null;
+
+function openFicha() {
+  fichaData = null;
+  document.getElementById('fc-code').value = '';
+  document.getElementById('fc-nome').value = '';
+  document.getElementById('fc-hint').textContent = '';
+  document.getElementById('fc-content').style.display = 'none';
+  document.getElementById('ficha-modal').classList.add('open');
+}
+function closeFicha() { document.getElementById('ficha-modal').classList.remove('open'); }
+
+async function buscarFicha() {
+  const code = document.getElementById('fc-code').value.trim();
+  const nome = document.getElementById('fc-nome').value.trim().toLowerCase();
+  const hint = document.getElementById('fc-hint');
+  if (!code && !nome) { hint.textContent = 'Informe ao menos o código.'; return; }
+  hint.textContent = 'Buscando...'; hint.style.color = '#8FA3B8';
+  try {
+    const token = await getToken();
+    const resp = await fetch(
+      `https://graph.microsoft.com/v1.0/drives/${DRIVE_ID}/items/${FILE_ID}/workbook/tables('Tabela6')/rows`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    const data = await resp.json();
+    const rows = data.value || [];
+    let found = null;
+    for (const row of rows) {
+      const v = row.values[0];
+      const rowCode = String(v[0] || '').trim();
+      const rowNome = String(v[5] || '').trim().toLowerCase();
+      if (code && rowCode === code) { found = v; break; }
+      if (!code && nome && rowNome.includes(nome)) { found = v; break; }
+    }
+    if (!found) { hint.textContent = 'Cliente não encontrado.'; hint.style.color = '#8C1E1E'; return; }
+    fichaData = found;
+    hint.textContent = 'Cliente encontrado.'; hint.style.color = '#2D6A4F';
+    renderFicha(found);
+  } catch(e) {
+    hint.textContent = 'Erro: ' + e.message; hint.style.color = '#8C1E1E';
+  }
+}
+
+function renderFicha(v) {
+  const sit = String(v[1] || '—');
+  const sitColors = {
+    'ativado':              { bg: '#E8F5EE', color: '#2D6A4F' },
+    'desativado':           { bg: '#FDECEA', color: '#8C1E1E' },
+    'em processo de baixa': { bg: '#FFF8E1', color: '#7B5E00' },
+  };
+  const sc = sitColors[sit.toLowerCase()] || { bg: '#F3F1EC', color: '#5A6E84' };
+  document.getElementById('fc-nome-display').textContent = String(v[5] || '—');
+  document.getElementById('fc-sub-display').textContent  = (v[4] || '—') + ' · ' + (v[11] || '—');
+  const badge = document.getElementById('fc-sit-badge');
+  badge.textContent = sit;
+  badge.style.background = sc.bg;
+  badge.style.color = sc.color;
+  function campo(label, value) {
+    const val = value && String(value).trim() ? String(value).trim() : '—';
+    return '<div style="padding:8px 10px;background:#F3F1EC;border-radius:4px;border-left:2px solid var(--gold);"><div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;margin-bottom:1px;">' + label + '</div><div style="font-size:12px;font-weight:500;color:var(--navy);">' + val + '</div></div>';
+  }
+  const inicio = formatMes(v[2]);
+  const fim    = formatMes(v[3]);
+  document.getElementById('fc-grid').innerHTML = [
+    campo('Código', v[0]), campo('CNPJ / CPF / CEI', v[12]),
+    campo('Inscrição Estadual', v[13]), campo('Optante Simples/MEI', v[19]),
+    campo('Tributação', v[11]), campo('Ramo de Atividade', v[6]),
+    campo('Conselho de Classe', v[14]), campo('Sócio reside no Exterior', v[15]),
+    campo('Nossa Empresa', v[4]), campo('Serviço', v[10]),
+    campo('Início Contrato', inicio), campo('Final Contrato', fim),
+    campo('DP', v[7]), campo('Fiscal', v[8]),
+    campo('Contábil', v[9]), campo('Status Contrato', v[16]),
+    campo('Confirmação Cadastro', v[18]),
+  ].join('') + '<div style="grid-column:1/-1;padding:8px 10px;background:#F3F1EC;border-radius:4px;border-left:2px solid var(--gold);"><div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;margin-bottom:1px;">Observações</div><div style="font-size:12px;color:var(--navy);">' + (v[17] && String(v[17]).trim() ? String(v[17]) : '—') + '</div></div>';
+  document.getElementById('fc-content').style.display = 'block';
+}
+
+function imprimirFicha() {
+  if (!fichaData) return;
+  const v = fichaData;
+  const sit = String(v[1] || '—');
+  const sitBgMap = { 'ativado': '#E8F5EE', 'desativado': '#FDECEA', 'em processo de baixa': '#FFF8E1' };
+  const sitCoMap = { 'ativado': '#2D6A4F', 'desativado': '#8C1E1E', 'em processo de baixa': '#7B5E00' };
+  const sitBg = sitBgMap[sit.toLowerCase()] || '#F3F1EC';
+  const sitCo = sitCoMap[sit.toLowerCase()] || '#5A6E84';
+  function campo(label, value) {
+    const val = value && String(value).trim() ? String(value).trim() : '—';
+    return '<div style="padding:10px 14px;background:#F3F1EC;border-radius:4px;border-left:2px solid #C9A84C;"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;margin-bottom:2px;">' + label + '</div><div style="font-size:13px;font-weight:500;color:#1A2A3E;">' + val + '</div></div>';
+  }
+  const inicio = formatMes(v[2]);
+  const fim    = formatMes(v[3]);
+  const html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Ficha — ' + v[5] + '</title><style>body{margin:0;padding:32px 40px;font-family:"Segoe UI",Arial,sans-serif;background:#fff;}@media print{@page{margin:10mm;size:A4;}body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}</style></head><body>'
+    + '<div style="background:#1E3A5F;padding:18px 24px;border-radius:8px 8px 0 0;display:flex;justify-content:space-between;align-items:center;"><div><div style="font-size:18px;font-weight:600;color:#C9A84C;font-family:Georgia,serif;">Braga &amp; Campos Assessoria</div><div style="font-size:11px;color:#E8CC82;letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;">Ficha de Cliente</div></div><div><span style="background:' + sitBg + ';color:' + sitCo + ';padding:4px 14px;border-radius:20px;font-size:12px;font-weight:600;">' + sit + '</span></div></div>'
+    + '<div style="background:#122540;padding:14px 24px;"><div style="font-size:20px;font-weight:600;color:#fff;font-family:Georgia,serif;">' + (v[5]||'—') + '</div><div style="font-size:12px;color:#8FA3B8;margin-top:2px;">' + (v[4]||'—') + ' &nbsp;·&nbsp; ' + (v[11]||'—') + '</div></div>'
+    + '<div style="border:1px solid #E0DDD6;border-top:none;border-radius:0 0 8px 8px;padding:20px 24px;background:#FAFAF8;">'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">'
+    + campo('Código',v[0]) + campo('CNPJ / CPF / CEI',v[12]) + campo('Inscrição Estadual',v[13]) + campo('Optante Simples/MEI',v[19])
+    + campo('Tributação',v[11]) + campo('Ramo de Atividade',v[6]) + campo('Conselho de Classe',v[14]) + campo('Sócio reside no Exterior',v[15])
+    + campo('Nossa Empresa',v[4]) + campo('Serviço',v[10]) + campo('Início Contrato',inicio) + campo('Final Contrato',fim)
+    + campo('DP',v[7]) + campo('Fiscal',v[8]) + campo('Contábil',v[9]) + campo('Status Contrato',v[16]) + campo('Confirmação Cadastro',v[18])
+    + '</div>'
+    + '<div style="padding:10px 14px;background:#F3F1EC;border-radius:4px;border-left:2px solid #C9A84C;"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;margin-bottom:2px;">Observações</div><div style="font-size:13px;color:#1A2A3E;">' + (v[17]&&String(v[17]).trim()?String(v[17]):'—') + '</div></div>'
+    + '<div style="margin-top:16px;font-size:10px;color:#8FA3B8;border-top:1px solid #E0DDD6;padding-top:10px;">Gerado em ' + new Date().toLocaleString('pt-BR') + ' · B&amp;C Sistema de Gestão de Contratos Recorrentes</div>'
+    + '</div></body></html>';
+  const win = window.open('', '_blank');
+  win.document.write(html);
+  win.document.close();
+  setTimeout(() => win.print(), 400);
+}
+
+/* Log entry genérico (sem depender dos campos do formulário) */
+function addLogEntryCustom(action, cliente, cnpj, empresa) {
+  const entries = getLog();
+  entries.unshift({
+    id: Date.now(),
+    timestamp: new Date().toLocaleString('pt-BR'),
+    timestamp_iso: new Date().toISOString(),
+    user_name:  currentUser ? currentUser.name  : '—',
+    user_email: currentUser ? currentUser.email : '—',
+    action, cliente, cnpj, empresa,
+    inicio: '', tributacao: '', servico_tipo: '09',
+  });
+  saveLog(entries);
+}
+
+/* ── Init ── */
+initAuth();
+</script>
+
+<!-- ══════════════════════════════════════════
+     RELATÓRIO MENSAL MODAL
+══════════════════════════════════════════ -->
+<!-- ── Modal Ficha do Cliente ── -->
+<div class="modal-overlay" id="ficha-modal">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-header">
+      <div class="modal-title">Ficha do Cliente</div>
+      <button class="modal-close" onclick="closeFicha()">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="margin-bottom:16px;">
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;margin-bottom:6px;">Buscar cliente</div>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="fc-code" placeholder="Código" style="width:100px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:'DM Sans',sans-serif;">
+          <input type="text" id="fc-nome" placeholder="Nome do cliente (opcional)" style="flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:'DM Sans',sans-serif;">
+          <button onclick="buscarFicha()" style="padding:8px 16px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;">Buscar</button>
+        </div>
+        <div id="fc-hint" style="font-size:11px;margin-top:5px;color:#8FA3B8;"></div>
+      </div>
+      <div id="fc-content" style="display:none;">
+        <!-- Header card -->
+        <div style="background:var(--navy);border-radius:8px 8px 0 0;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:16px;font-weight:600;color:var(--gold);font-family:Georgia,serif;" id="fc-nome-display">—</div>
+            <div style="font-size:11px;color:#8FA3B8;margin-top:2px;" id="fc-sub-display">—</div>
+          </div>
+          <div style="text-align:right;">
+            <div id="fc-sit-badge" style="display:inline-block;padding:3px 12px;border-radius:20px;font-size:11px;font-weight:600;">—</div>
+          </div>
+        </div>
+        <!-- Fields grid -->
+        <div id="fc-grid" style="border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px;padding:16px;background:#FAFAF8;display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
+        <div style="margin-top:12px;display:flex;gap:8px;">
+          <button onclick="imprimirFicha()" style="flex:1;padding:9px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;">
+            Imprimir / Salvar PDF
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal Alteração de Situação ── -->
+<div class="modal-overlay" id="alteracao-modal">
+  <div class="modal" style="max-width:540px;">
+    <div class="modal-header">
+      <div class="modal-title">Alteração de Situação Contratual</div>
+      <button class="modal-close" onclick="closeAlteracao()">×</button>
+    </div>
+    <div class="modal-body">
+      <!-- Busca -->
+      <div style="margin-bottom:18px;">
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;margin-bottom:6px;">Buscar cliente</div>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="alt-code" placeholder="Código (ex: 674)" style="width:100px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:'DM Sans',sans-serif;">
+          <input type="text" id="alt-nome" placeholder="Nome do cliente (opcional)" style="flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:'DM Sans',sans-serif;">
+          <button onclick="buscarClienteAlt()" style="padding:8px 16px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;">Buscar</button>
+        </div>
+        <div id="alt-busca-hint" style="font-size:11px;margin-top:5px;color:#8FA3B8;"></div>
+      </div>
+
+      <!-- Cliente encontrado -->
+      <div id="alt-cliente-info" style="display:none;background:#F3F1EC;border-radius:6px;padding:12px 14px;margin-bottom:16px;border-left:3px solid var(--gold);">
+        <div style="font-weight:600;font-size:14px;color:var(--navy);" id="alt-cli-nome">—</div>
+        <div style="font-size:11px;color:#5A6E84;margin-top:2px;" id="alt-cli-info">—</div>
+        <div style="font-size:11px;color:#8FA3B8;margin-top:2px;" id="alt-sit-atual">—</div>
+      </div>
+
+      <!-- Tipo de alteração -->
+      <div id="alt-opcoes" style="display:none;">
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;margin-bottom:8px;">Tipo de alteração</div>
+        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+          <button class="alt-tipo-btn" id="alt-btn-saida" onclick="selectAltTipo('saida')" style="flex:1;min-width:130px;padding:10px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;text-align:left;">
+            <div style="font-weight:600;color:#8C1E1E;">Saída Cliente</div>
+            <div style="font-size:10px;color:#8FA3B8;margin-top:2px;">Desativa com data de saída</div>
+          </button>
+          <button class="alt-tipo-btn" id="alt-btn-baixa" onclick="selectAltTipo('baixa')" style="flex:1;min-width:130px;padding:10px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;text-align:left;">
+            <div style="font-weight:600;color:#C9A84C;">Em Processo de Baixa</div>
+            <div style="font-size:10px;color:#8FA3B8;margin-top:2px;">Situação intermediária</div>
+          </button>
+          <button class="alt-tipo-btn" id="alt-btn-definitiva" onclick="selectAltTipo('definitiva')" style="flex:1;min-width:130px;padding:10px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;text-align:left;">
+            <div style="font-weight:600;color:#8C1E1E;">Baixa Definitiva</div>
+            <div style="font-size:10px;color:#8FA3B8;margin-top:2px;">Desativa com data e observação</div>
+          </button>
+        </div>
+
+        <!-- Campos condicionais -->
+        <div id="alt-campo-data" style="display:none;margin-bottom:12px;">
+          <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;display:block;margin-bottom:4px;">Data de Saída / Final Contrato <span style="color:var(--gold);">*</span></label>
+          <input type="date" id="alt-data" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:'DM Sans',sans-serif;box-sizing:border-box;">
+        </div>
+        <div id="alt-campo-obs" style="display:none;margin-bottom:12px;">
+          <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;display:block;margin-bottom:4px;">Observação <span style="font-size:10px;font-weight:400;">(será adicionada à existente)</span></label>
+          <textarea id="alt-obs" rows="3" placeholder="Observação a adicionar..." style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:'DM Sans',sans-serif;resize:vertical;box-sizing:border-box;"></textarea>
+        </div>
+
+        <div id="alt-status" style="font-size:12px;margin-bottom:10px;display:none;"></div>
+        <button id="alt-confirmar-btn" onclick="confirmarAlteracao()" style="width:100%;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Confirmar Alteração</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal Editar Cadastro ── -->
+<div class="modal-overlay" id="edicao-modal">
+  <div class="modal" style="max-width:660px;">
+    <div class="modal-header">
+      <div class="modal-title">Editar Cadastro</div>
+      <button class="modal-close" onclick="closeEdicao()">×</button>
+    </div>
+    <div class="modal-body">
+      <!-- Busca -->
+      <div style="margin-bottom:18px;">
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;margin-bottom:6px;">Buscar cliente</div>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="ed-code" placeholder="Código" style="width:100px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:'DM Sans',sans-serif;">
+          <input type="text" id="ed-nome" placeholder="Nome do cliente (opcional)" style="flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:'DM Sans',sans-serif;">
+          <button onclick="buscarClienteEd()" style="padding:8px 16px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;">Buscar</button>
+        </div>
+        <div id="ed-busca-hint" style="font-size:11px;margin-top:5px;color:#8FA3B8;"></div>
+      </div>
+
+      <!-- Formulário de edição -->
+      <div id="ed-form" style="display:none;">
+        <div style="background:#F3F1EC;border-radius:6px;padding:10px 14px;margin-bottom:14px;border-left:3px solid var(--gold);">
+          <div style="font-weight:600;font-size:13px;color:var(--navy);" id="ed-cli-nome">—</div>
+          <div style="font-size:11px;color:#5A6E84;" id="ed-cli-info">—</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+          <div>
+            <label style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;display:block;margin-bottom:3px;">Nossa Empresa</label>
+            <select id="ed-empresa" style="width:100%;padding:7px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-family:'DM Sans',sans-serif;">
+              <option>RCB</option><option>GME</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;display:block;margin-bottom:3px;">Ramo de Atividade</label>
+            <input type="text" id="ed-ramo" style="width:100%;padding:7px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-family:'DM Sans',sans-serif;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;display:block;margin-bottom:3px;">Tributação</label>
+            <select id="ed-trib" style="width:100%;padding:7px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-family:'DM Sans',sans-serif;">
+              <option>Simples Nacional</option><option>Lucro Presumido</option><option>Lucro Real</option>
+              <option>MEI</option><option>Imune/Isenta</option><option>Exterior</option>
+              <option>Consórcio</option><option>Inativa</option><option>Pessoa Física</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;display:block;margin-bottom:3px;">Optante Simples/MEI</label>
+            <select id="ed-optante" style="width:100%;padding:7px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-family:'DM Sans',sans-serif;">
+              <option value="">—</option><option>Optante</option><option>MEI</option><option>Não Optante</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;display:block;margin-bottom:3px;">DP</label>
+            <select id="ed-dp" style="width:100%;padding:7px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-family:'DM Sans',sans-serif;">
+              <option>Sim</option><option>Não</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;display:block;margin-bottom:3px;">Fiscal</label>
+            <select id="ed-fiscal" style="width:100%;padding:7px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-family:'DM Sans',sans-serif;">
+              <option>Sim</option><option>Não</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;display:block;margin-bottom:3px;">Contábil</label>
+            <select id="ed-cont" style="width:100%;padding:7px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-family:'DM Sans',sans-serif;">
+              <option>Sim</option><option>Não</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;display:block;margin-bottom:3px;">Conselho de Classe</label>
+            <input type="text" id="ed-conselho" style="width:100%;padding:7px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-family:'DM Sans',sans-serif;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;display:block;margin-bottom:3px;">Sócio reside no Exterior</label>
+            <select id="ed-exterior" style="width:100%;padding:7px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-family:'DM Sans',sans-serif;">
+              <option>Não</option><option>Sim</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;display:block;margin-bottom:3px;">Status Contrato</label>
+            <select id="ed-contrato" style="width:100%;padding:7px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-family:'DM Sans',sans-serif;">
+              <option>Assinado</option><option>Pendente</option><option>Em renovação</option><option>Sem contrato</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;display:block;margin-bottom:3px;">Confirmação Cadastro</label>
+            <select id="ed-cadastro" style="width:100%;padding:7px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-family:'DM Sans',sans-serif;">
+              <option>OK</option><option>Pendente</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;display:block;margin-bottom:3px;">I.E.</label>
+            <input type="text" id="ed-ie" style="width:100%;padding:7px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-family:'DM Sans',sans-serif;box-sizing:border-box;">
+          </div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;display:block;margin-bottom:3px;">Observações <span style="font-size:10px;font-weight:400;">(será adicionada à existente)</span></label>
+          <textarea id="ed-obs" rows="2" style="width:100%;padding:7px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-family:'DM Sans',sans-serif;resize:vertical;box-sizing:border-box;"></textarea>
+        </div>
+        <div id="ed-obs-atual" style="font-size:10px;color:#8FA3B8;margin-bottom:12px;display:none;"></div>
+        <div id="ed-status" style="font-size:12px;margin-bottom:10px;display:none;"></div>
+        <button onclick="confirmarEdicao()" style="width:100%;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Salvar Alterações</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="modal" style="max-width:700px;">
+    <div class="modal-header">
+      <div class="modal-title">Relatório Mensal de Contratos</div>
+      <button class="modal-close" onclick="closeRelatorio()">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;gap:10px;margin-bottom:1rem;align-items:center;flex-wrap:wrap;">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <label style="font-size:11px;color:var(--text-muted);font-weight:500;">MÊS DE REFERÊNCIA</label>
+          <input type="month" id="rel-mes" style="height:36px;padding:0 10px;border:1px solid var(--border-strong);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:13px;">
+        </div>
+        <button onclick="gerarRelatorio()" style="margin-top:18px;display:inline-flex;align-items:center;gap:6px;padding:0 16px;height:36px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Gerar relatório
+        </button>
+        <div id="rel-acoes" style="margin-top:18px;display:none;gap:8px;flex-wrap:wrap;">
+          <button id="btn-png" onclick="baixarPNG()" style="display:inline-flex;align-items:center;gap:6px;padding:0 14px;height:36px;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            ⬇ Baixar PNG
+          </button>
+          <button onclick="baixarCSV()" style="display:inline-flex;align-items:center;gap:6px;padding:0 14px;height:36px;background:var(--gold);color:#fff;border:none;border-radius:var(--radius);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            ⬇ Baixar CSV detalhado
+          </button>
+          <button id="btn-pdf" onclick="baixarFichasPDF()" style="display:inline-flex;align-items:center;gap:6px;padding:0 14px;height:36px;background:#8C1E1E;color:#fff;border:none;border-radius:var(--radius);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <span id="btn-pdf-label">&#8595; Fichas PDF</span>
+          </button>
+          <button onclick="abrirOutlook()" style="display:inline-flex;align-items:center;gap:6px;padding:0 14px;height:36px;background:transparent;color:var(--navy);border:1px solid var(--border-strong);border-radius:var(--radius);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Abrir no Outlook
+          </button>
+        </div>
+      </div>
+      <div id="rel-loading" style="display:none;text-align:center;padding:2rem;color:var(--text-muted);font-size:13px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite;vertical-align:-5px;margin-right:8px;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        Lendo a planilha...
+      </div>
+      <div id="rel-resultado" style="display:none;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:1rem 1.25rem;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.7;max-height:420px;overflow-y:auto;" id="rel-corpo"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+</style>
+
+<script>
+/* ── RELATÓRIO MENSAL ── */
+let relatorioTexto = '';
+
+function openRelatorio() {
+  // Default to last month
+  const hoje = new Date();
+  const mesPassado = new Date(hoje.getFullYear(), hoje.getMonth() - 1, 1);
+  document.getElementById('rel-mes').value = mesPassado.toISOString().slice(0,7);
+  document.getElementById('rel-resultado').style.display = 'none';
+  document.getElementById('rel-acoes').style.display = 'none';
+  document.getElementById('relatorio-modal').classList.add('open');
+}
+function closeRelatorio() {
+  document.getElementById('relatorio-modal').classList.remove('open');
+}
+
+async function gerarRelatorio() {
+  const mesVal = document.getElementById('rel-mes').value;
+  if (!mesVal) { showToast('Selecione o mês de referência.'); return; }
+
+  const [ano, mes] = mesVal.split('-').map(Number);
+  // mes1 = mês selecionado, mes2 = mês anterior a ele
+  const mes1 = { ano, mes };
+  const mes2 = mes === 1 ? { ano: ano-1, mes: 12 } : { ano, mes: mes-1 };
+
+  document.getElementById('rel-loading').style.display = 'block';
+  document.getElementById('rel-resultado').style.display = 'none';
+  document.getElementById('rel-acoes').style.display = 'none';
+
+  try {
+    const token = await getToken();
+
+    // Sheet configs: [sheetName, tableName]
+    const sheets = [
+      { nome: '09 - Assess. Cont. PJ', tabela: 'Tabela6',
+        colunas: { sit:1, inicio:2, empresa:4, cliente:5, dp:7, fiscal:8, cont:9, trib:11 }},
+    ];
+    // TODO: add DP and 01 sheets when available
+
+    relData.novosM1=[]; relData.novosM2=[]; relData.encerradosM1=[]; relData.encerradosM2=[]; relData.emBaixa=[];
+    relData.mes1=mes1; relData.mes2=mes2;
+    let novosM1 = relData.novosM1, novosM2 = relData.novosM2, encerradosM1 = relData.encerradosM1, encerradosM2 = relData.encerradosM2, emBaixa = relData.emBaixa;
+
+    for (const sheet of sheets) {
+      const resp = await fetch(
+        `https://graph.microsoft.com/v1.0/drives/${DRIVE_ID}/items/${FILE_ID}/workbook/tables('${sheet.tabela}')/rows`,
+        { headers: { 'Authorization': `Bearer ${token}` } }
+      );
+      const data = await resp.json();
+      const rows = data.value || [];
+
+      for (const row of rows) {
+        const v = row.values[0];
+        const sit      = String(v[sheet.colunas.sit] || '').trim();
+        const inicioRaw = v[sheet.colunas.inicio];
+        const fimRaw    = v[3]; // D - Final Contrato
+        const empresa   = String(v[sheet.colunas.empresa] || '').trim();
+        const cliente   = String(v[sheet.colunas.cliente] || '').trim();
+        const dp        = String(v[sheet.colunas.dp] || '').trim();
+        const fiscal    = String(v[sheet.colunas.fiscal] || '').trim();
+        const cont      = String(v[sheet.colunas.cont] || '').trim();
+        const trib      = String(v[sheet.colunas.trib] || '').trim();
+        if (!cliente) continue;
+
+        const code  = String(v[0] || '').trim();
+        const cnpj  = String(v[12] || '').trim();
+        const entry = { code, cliente, empresa, cnpj, dp, fiscal, cont, trib, sheet: sheet.nome };
+
+        // Parse date — force UTC to avoid timezone shifting end-of-month dates
+        function parseDate(raw) {
+          if (!raw) return null;
+          if (typeof raw === 'number') {
+            // Excel serial: add 0.5 to land at noon UTC, avoiding day boundary shifts
+            const d = new Date(Math.round((raw - 25569) * 86400) * 1000);
+            return { ano: d.getUTCFullYear(), mes: d.getUTCMonth() + 1 };
+          }
+          const s = String(raw);
+          const m = s.match(/(\d{4})-(\d{2})/);
+          if (m) return { ano: parseInt(m[1]), mes: parseInt(m[2]) };
+          const m2 = s.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+          if (m2) return { ano: parseInt(m2[3]), mes: parseInt(m2[2]) };
+          return null;
+        }
+
+        function inMes(dt, m) { return dt && dt.ano === m.ano && dt.mes === m.mes; }
+
+        const inicioDt = parseDate(inicioRaw);
+        const fimDt    = parseDate(fimRaw);
+
+        // Novos — inicio exatamente no mes1 ou mes2
+        if (inMes(inicioDt, mes1)) {
+          novosM1.push({ ...entry, data: formatMes(inicioRaw) });
+        } else if (inMes(inicioDt, mes2)) {
+          novosM2.push({ ...entry, data: formatMes(inicioRaw) });
+        }
+
+        // Encerrados — usa coluna Final Contrato, filtrado por mes1 ou mes2
+        const sitLower = sit.toLowerCase();
+        if (sitLower === 'desativado' || sitLower === 'encerrado') {
+          if (inMes(fimDt, mes1)) {
+            encerradosM1.push({ ...entry, sit, data: formatMes(fimRaw) });
+          } else if (inMes(fimDt, mes2)) {
+            encerradosM2.push({ ...entry, sit, data: formatMes(fimRaw) });
+          }
+        } else if (sitLower.includes('baixa') || sitLower.includes('processo')) {
+          emBaixa.push({ ...entry, sit });
+        }
+      }
+    }
+
+    // Build email body
+    const nomeMes1 = nomeDoMes(mes1.mes, mes1.ano);
+    const nomeMes2 = nomeDoMes(mes2.mes, mes2.ano);
+
+    let html = `<h3 style="color:#1E3A5F;margin:0 0 4px;">Relatório Mensal de Contratos</h3>`;
+    html += `<p style="color:#5A6E84;font-size:12px;margin:0 0 16px;">Referência: ${nomeMes1} e ${nomeMes2}</p>`;
+
+    function tabelaEntradas(lista, titulo, cor, dataLabel) {
+      if (!lista.length) return `<p style="margin:8px 0 16px;color:#8FA3B8;font-size:12px;">Nenhum contrato em ${titulo.toLowerCase()}.</p>`;
+      const colData = dataLabel || 'Data';
+      let t = `<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:16px;">`;
+      t += `<tr style="background:${cor};color:#fff;">`;
+      t += `<th style="padding:6px 8px;text-align:left;width:40px;">Cod.</th>`;
+      t += `<th style="padding:6px 8px;text-align:left;">Cliente</th>`;
+      t += `<th style="padding:6px 8px;text-align:left;">Empresa</th>`;
+      t += `<th style="padding:6px 8px;text-align:left;">CNPJ</th>`;
+      if (lista[0].data) t += `<th style="padding:6px 8px;text-align:left;">${colData}</th>`;
+      t += `</tr>`;
+      lista.forEach((e,i) => {
+        const bg = i%2===0 ? '#F3F1EC' : '#FFFFFF';
+        t += `<tr style="background:${bg};">`;
+        t += `<td style="padding:5px 8px;color:#8FA3B8;font-size:11px;">${e.code||'—'}</td>`;
+        t += `<td style="padding:5px 8px;font-weight:500;">${e.cliente}</td>`;
+        t += `<td style="padding:5px 8px;">${e.empresa}</td>`;
+        t += `<td style="padding:5px 8px;font-size:11px;color:#5A6E84;">${e.cnpj||'—'}</td>`;
+        if (e.data) t += `<td style="padding:5px 8px;">${e.data}</td>`;
+        t += `</tr>`;
+      });
+      t += `</table>`;
+      return t;
+    }
+
+    html += `<h4 style="color:#1E3A5F;border-bottom:2px solid #C9A84C;padding-bottom:4px;margin:16px 0 8px;">[+] Novos Contratos &mdash; ${nomeMes1} (${novosM1.length})</h4>`;
+    html += tabelaEntradas(novosM1, nomeMes1, '#1E3A5F', 'Início');
+
+    html += `<h4 style="color:#1E3A5F;border-bottom:2px solid #C9A84C;padding-bottom:4px;margin:16px 0 8px;">[+] Novos Contratos &mdash; ${nomeMes2} (${novosM2.length})</h4>`;
+    html += tabelaEntradas(novosM2, nomeMes2, '#1E3A5F', 'Início');
+
+    html += `<h4 style="color:#8C1E1E;border-bottom:2px solid #E57373;padding-bottom:4px;margin:16px 0 8px;">[-] Contratos Encerrados &mdash; ${nomeMes1} (${encerradosM1.length})</h4>`;
+    html += tabelaEntradas(encerradosM1, nomeMes1, '#8C1E1E', 'Encerramento');
+
+    html += `<h4 style="color:#8C1E1E;border-bottom:2px solid #E57373;padding-bottom:4px;margin:16px 0 8px;">[-] Contratos Encerrados &mdash; ${nomeMes2} (${encerradosM2.length})</h4>`;
+    html += tabelaEntradas(encerradosM2, nomeMes2, '#8C1E1E', 'Encerramento');
+
+    if (emBaixa.length) {
+      html += `<h4 style="color:#7B5E00;border-bottom:2px solid #C9A84C;padding-bottom:4px;margin:16px 0 8px;">[!] Em Processo de Baixa (${emBaixa.length})</h4>`;
+      html += tabelaEntradas(emBaixa, 'em processo de baixa', '#C9A84C');
+    }
+
+    html += `<p style="font-size:11px;color:#8FA3B8;margin-top:16px;border-top:1px solid #F3F1EC;padding-top:8px;">Gerado automaticamente pelo sistema B&C · ${new Date().toLocaleString('pt-BR')}</p>`;
+
+    document.getElementById('rel-corpo').innerHTML = html;
+    document.getElementById('rel-resultado').style.display = 'block';
+    document.getElementById('rel-acoes').style.display = 'flex';
+    relatorioTexto = html;
+
+  } catch(e) {
+    console.error(e);
+    showToast('Erro ao gerar relatório: ' + e.message);
+  } finally {
+    document.getElementById('rel-loading').style.display = 'none';
+  }
+}
+
+async function getToken() {
+  const resp = await msalInstance.acquireTokenSilent({
+    scopes: ['User.Read', 'Sites.ReadWrite.All'],
+    account: msalInstance.getAllAccounts()[0]
+  });
+  return resp.accessToken;
+}
+
+function formatMes(raw) {
+  if (!raw) return '';
+  if (typeof raw === 'number') {
+    const d = new Date((raw - 25569) * 86400 * 1000);
+    return d.toLocaleDateString('pt-BR');
+  }
+  const s = String(raw);
+  if (s.includes('-')) {
+    const [a,m,d] = s.split('T')[0].split('-');
+    return `${d}/${m}/${a}`;
+  }
+  return s;
+}
+
+function nomeDoMes(mes, ano) {
+  const nomes = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  return `${nomes[mes]}/${ano}`;
+}
+
+// ── Global report data store ──
+let relData = { novosM1:[], novosM2:[], encerradosM1:[], encerradosM2:[], emBaixa:[], mes1:{}, mes2:{} };
+
+function abrirOutlook() {
+  const assunto = encodeURIComponent('Relatório Mensal de Contratos — B&C');
+  const plainText = document.getElementById('rel-corpo').innerText;
+  window.location.href = `mailto:?subject=${assunto}&body=${encodeURIComponent(plainText)}`;
+}
+
+async function baixarPNG() {
+  const btn = document.getElementById('btn-png');
+  btn.textContent = 'Gerando...'; btn.disabled = true;
+  try {
+    const canvas = document.createElement('canvas');
+    const scale = 2; // retina
+    const W = 900, PAD = 40;
+    canvas.width = W * scale;
+
+    // First pass: measure height
+    const ctx = canvas.getContext('2d');
+    ctx.scale(scale, scale);
+
+    function drawHeader(ctx, y) {
+      // Background
+      ctx.fillStyle = '#1E3A5F';
+      ctx.fillRect(0, y, W, 70);
+      ctx.fillStyle = '#C9A84C';
+      ctx.font = 'bold 22px Georgia, serif';
+      ctx.fillText('Braga & Campos Assessoria Contábil', PAD, y + 28);
+      ctx.fillStyle = '#E8CC82';
+      ctx.font = '12px Arial, sans-serif';
+      const mes1n = nomeDoMes(relData.mes1.mes, relData.mes1.ano);
+      const mes2n = nomeDoMes(relData.mes2.mes, relData.mes2.ano);
+      ctx.fillText(`Relatório Mensal · Referência: ${mes1n} e ${mes2n}`, PAD, y + 48);
+      ctx.fillStyle = '#8FA3B8';
+      ctx.font = '11px Arial, sans-serif';
+      ctx.fillText(`Gerado em ${new Date().toLocaleString('pt-BR')}`, PAD, y + 63);
+      return y + 70;
+    }
+
+    function drawCards(ctx, y) {
+      const cards = [
+        { label: 'Novos em ' + nomeDoMes(relData.mes1.mes, relData.mes1.ano), val: relData.novosM1.length, color: '#2D6A4F', bg: '#E8F5EE' },
+        { label: 'Novos em ' + nomeDoMes(relData.mes2.mes, relData.mes2.ano), val: relData.novosM2.length, color: '#2D6A4F', bg: '#E8F5EE' },
+        { label: 'Encerrados', val: relData.encerradosM1.length, color: '#8C1E1E', bg: '#FDECEA' },
+        { label: 'Em Processo de Baixa', val: relData.emBaixa.length, color: '#7B5E00', bg: '#FFF8E1' },
+      ];
+      y += 20;
+      const cw = (W - PAD*2 - 30) / 4;
+      cards.forEach((c, i) => {
+        const x = PAD + i * (cw + 10);
+        ctx.fillStyle = c.bg;
+        roundRect(ctx, x, y, cw, 72, 8);
+        ctx.fillStyle = c.color;
+        ctx.font = 'bold 32px Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(c.val, x + cw/2, y + 42);
+        ctx.font = '11px Arial, sans-serif';
+        ctx.fillStyle = '#5A6E84';
+        ctx.fillText(c.label, x + cw/2, y + 60);
+        ctx.textAlign = 'left';
+      });
+      return y + 72 + 24;
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x+r, y);
+      ctx.lineTo(x+w-r, y); ctx.arcTo(x+w,y,x+w,y+r,r);
+      ctx.lineTo(x+w,y+h-r); ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+      ctx.lineTo(x+r,y+h); ctx.arcTo(x,y+h,x,y+h-r,r);
+      ctx.lineTo(x,y+r); ctx.arcTo(x,y,x+r,y,r);
+      ctx.closePath(); ctx.fill();
+    }
+
+    function drawSection(ctx, y, titulo, lista, headerColor, hasData) {
+      // Section title
+      y += 10;
+      ctx.fillStyle = headerColor;
+      ctx.font = 'bold 14px Arial, sans-serif';
+      ctx.fillText(titulo + ` (${lista.length})`, PAD, y + 16);
+      ctx.fillStyle = '#C9A84C';
+      ctx.fillRect(PAD, y + 20, W - PAD*2, 2);
+      y += 28;
+
+      if (!lista.length) {
+        ctx.fillStyle = '#8FA3B8'; ctx.font = 'italic 12px Arial, sans-serif';
+        ctx.fillText('Nenhum contrato nesta categoria.', PAD, y + 14);
+        return y + 30;
+      }
+
+      // Table header
+      const cols = [
+        { label: 'Cod.', w: 50 },
+        { label: 'Cliente', w: 220 },
+        { label: 'Empresa', w: 65 },
+        { label: 'Tributação', w: 120 },
+        { label: 'DP', w: 35 },
+        { label: 'Fiscal', w: 45 },
+        { label: 'Cont.', w: 45 },
+        { label: 'Início', w: 90 },
+      ];
+      const ROW_H = 22, HDR_H = 26;
+      ctx.fillStyle = headerColor;
+      ctx.fillRect(PAD, y, W - PAD*2, HDR_H);
+      let cx = PAD + 8;
+      cols.forEach(c => {
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 11px Arial, sans-serif';
+        ctx.fillText(c.label, cx, y + 17);
+        cx += c.w;
+      });
+      y += HDR_H;
+
+      lista.forEach((e, i) => {
+        ctx.fillStyle = i%2===0 ? '#F3F1EC' : '#FFFFFF';
+        ctx.fillRect(PAD, y, W - PAD*2, ROW_H);
+        cx = PAD + 8;
+        const vals = [e.code||'—', e.cliente, e.empresa, e.trib, e.dp, e.fiscal, e.cont, e.data||''];
+        cols.forEach((c, ci) => {
+          ctx.fillStyle = ci===0 ? '#8FA3B8' : ci===1 ? '#1A2A3E' : '#5A6E84';
+          ctx.font = ci===1 ? 'bold 11px Arial, sans-serif' : '11px Arial, sans-serif';
+          // Truncate text
+          let txt = String(vals[ci] || '');
+          while (ctx.measureText(txt).width > c.w - 8 && txt.length > 0) txt = txt.slice(0,-1);
+          if (vals[ci] && txt !== String(vals[ci])) txt += '…';
+          ctx.fillText(txt, cx, y + 15);
+          cx += c.w;
+        });
+        y += ROW_H;
+      });
+      return y;
+    }
+
+    // Calculate total height
+    let totalH = 70 + 20 + 72 + 24; // header + cards
+    const sections = [
+      { titulo: 'Novos Contratos — ' + nomeDoMes(relData.mes1.mes, relData.mes1.ano), lista: relData.novosM1, color: '#1E3A5F' },
+      { titulo: 'Novos Contratos — ' + nomeDoMes(relData.mes2.mes, relData.mes2.ano), lista: relData.novosM2, color: '#1E3A5F' },
+      { titulo: 'Contratos Encerrados — ' + nomeDoMes(relData.mes1.mes, relData.mes1.ano), lista: relData.encerradosM1, color: '#8C1E1E' },
+      { titulo: 'Contratos Encerrados — ' + nomeDoMes(relData.mes2.mes, relData.mes2.ano), lista: relData.encerradosM2, color: '#8C1E1E' },
+      { titulo: 'Em Processo de Baixa', lista: relData.emBaixa, color: '#C9A84C' },
+    ];
+    sections.forEach(s => {
+      totalH += 10 + 28 + (s.lista.length ? 26 + s.lista.length * 22 : 30);
+    });
+    totalH += 40; // footer
+
+    canvas.height = (totalH + 20) * scale;
+    // Redraw with correct height
+    ctx.scale(scale, scale);
+    ctx.fillStyle = '#FAFAF8';
+    ctx.fillRect(0, 0, W, totalH + 20);
+
+    let y = 0;
+    y = drawHeader(ctx, y);
+    y = drawCards(ctx, y);
+    sections.forEach(s => {
+      y = drawSection(ctx, y, s.titulo, s.lista, s.color);
+    });
+
+    // Footer
+    y += 10;
+    ctx.fillStyle = '#E0DDD6';
+    ctx.fillRect(PAD, y, W - PAD*2, 1);
+    ctx.fillStyle = '#8FA3B8'; ctx.font = '10px Arial, sans-serif';
+    ctx.fillText('Braga & Campos Assessoria Contábil · Sistema de Gestão de Contratos', PAD, y + 16);
+
+    const link = document.createElement('a');
+    link.download = `BC_Relatorio_${nomeDoMes(relData.mes1.mes,relData.mes1.ano).replace('/','_')}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    showToast('PNG gerado com sucesso!');
+  } catch(e) {
+    console.error(e);
+    showToast('Erro ao gerar PNG: ' + e.message);
+  } finally {
+    btn.textContent = '⬇ Baixar PNG'; btn.disabled = false;
+  }
+}
+
+function baixarCSV() {
+  const todas = [
+    ...relData.novosM1.map(e=>({...e,categoria:'Novo — '+nomeDoMes(relData.mes1.mes,relData.mes1.ano)})),
+    ...relData.novosM2.map(e=>({...e,categoria:'Novo — '+nomeDoMes(relData.mes2.mes,relData.mes2.ano)})),
+    ...relData.encerradosM1.map(e=>({...e,categoria:'Encerrado — '+nomeDoMes(relData.mes1.mes,relData.mes1.ano)})),
+    ...relData.encerradosM2.map(e=>({...e,categoria:'Encerrado — '+nomeDoMes(relData.mes2.mes,relData.mes2.ano)})),
+    ...relData.emBaixa.map(e=>({...e,categoria:'Em Processo de Baixa'})),
+  ];
+  if (!todas.length) { showToast('Nenhum dado para exportar.'); return; }
+  const header = ['Categoria','Cliente','Empresa','Tributação','DP','Fiscal','Contábil','Data','Aba'];
+  const rows = todas.map(e => [e.categoria,e.cliente,e.empresa,e.trib,e.dp,e.fiscal,e.cont,e.data||'',e.sheet]);
+  const csv = [header,...rows].map(r => r.map(v => '"' + String(v || '').replace(/"/g, '""') + '"').join(';')).join('\n');
+
+  const blob = new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `BC_Contratos_Detalhado_${nomeDoMes(relData.mes1.mes,relData.mes1.ano).replace('/','_')}.csv`;
+  a.click();
+  showToast('CSV exportado!');
+}
+/* ── Fichas PDF ── */
+async function baixarFichasPDF() {
+  const btn = document.getElementById('btn-pdf');
+  const label = document.getElementById('btn-pdf-label');
+
+  // Collect all clients from report
+  const todos = [
+    ...relData.novosM1.map(e => ({...e, categoria: 'Novo — ' + nomeDoMes(relData.mes1.mes, relData.mes1.ano)})),
+    ...relData.novosM2.map(e => ({...e, categoria: 'Novo — ' + nomeDoMes(relData.mes2.mes, relData.mes2.ano)})),
+    ...relData.encerradosM1.map(e => ({...e, categoria: 'Encerrado — ' + nomeDoMes(relData.mes1.mes, relData.mes1.ano)})),
+    ...relData.encerradosM2.map(e => ({...e, categoria: 'Encerrado — ' + nomeDoMes(relData.mes2.mes, relData.mes2.ano)})),
+    ...relData.emBaixa.map(e => ({...e, categoria: 'Em Processo de Baixa'})),
+  ];
+
+  if (!todos.length) { showToast('Nenhum cliente no relatório para gerar fichas.'); return; }
+
+  btn.disabled = true;
+  label.textContent = 'Buscando dados...';
+
+  try {
+    const token = await getToken();
+
+    // Fetch all rows from Master to get full data for each client
+    const resp = await fetch(
+      `https://graph.microsoft.com/v1.0/drives/${DRIVE_ID}/items/${FILE_ID}/workbook/tables('Tabela6')/rows`,
+      { headers: { 'Authorization': `Bearer ${token}` } }
+    );
+    const data = await resp.json();
+    const allRows = data.value || [];
+
+    // Build lookup by CNPJ
+    const masterMap = {};
+    for (const row of allRows) {
+      const v = row.values[0];
+      const cnpj = String(v[12] || '').trim(); // M - CNPJ
+      if (cnpj) masterMap[cnpj] = v;
+    }
+
+    label.textContent = 'Gerando PDF...';
+
+    // Build HTML for print
+    const nomeMes1 = nomeDoMes(relData.mes1.mes, relData.mes1.ano);
+    const nomeMes2 = nomeDoMes(relData.mes2.mes, relData.mes2.ano);
+
+    function tagCategoria(cat) {
+      if (cat.startsWith('Novo')) return `<span style="background:#E8F5EE;color:#2D6A4F;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;">${cat}</span>`;
+      if (cat.startsWith('Encerrado')) return `<span style="background:#FDECEA;color:#8C1E1E;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;">${cat}</span>`;
+      return `<span style="background:#FFF8E1;color:#7B5E00;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;">${cat}</span>`;
+    }
+
+    function campo(label, value) {
+      const v = value || '—';
+      return `<div style="padding:10px 14px;background:#F3F1EC;border-radius:4px;border-left:2px solid #C9A84C;">
+        <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8FA3B8;margin-bottom:2px;">${label}</div>
+        <div style="font-size:13px;font-weight:500;color:#1A2A3E;">${v}</div>
+      </div>`;
+    }
+
+    let fichasHtml = '';
+    for (const cliente of todos) {
+      // Find in master by cliente name (fallback) or match by CNPJ from entry
+      const cnpjKey = Object.keys(masterMap).find(k => {
+        const v = masterMap[k];
+        return String(v[5] || '').trim() === cliente.cliente;
+      });
+      const v = cnpjKey ? masterMap[cnpjKey] : null;
+
+      const cnpj      = v ? String(v[12] || '').trim() : '—';
+      const code      = v ? String(v[0]  || '').trim() : (cliente.code || '—');
+      const ie        = v ? String(v[13] || '').trim() : '—';
+      const conselho  = v ? String(v[14] || '').trim() : '—';
+      const exterior  = v ? String(v[15] || '').trim() : '—';
+      const contrato  = v ? String(v[16] || '').trim() : '—';
+      const obs       = v ? String(v[17] || '').trim() : '—';
+      const cadastro  = v ? String(v[18] || '').trim() : '—';
+      const inicio    = v ? formatMes(v[2]) : (cliente.data || '—');
+      const fim       = v ? formatMes(v[3]) : '—';
+      const sit       = v ? String(v[1] || '').trim() : '—';
+
+      fichasHtml += `
+      <div style="page-break-after:always;padding:32px 40px;font-family:'Segoe UI',Arial,sans-serif;max-width:720px;margin:0 auto;">
+        <!-- Cabeçalho -->
+        <div style="background:#1E3A5F;padding:18px 24px;border-radius:8px 8px 0 0;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:18px;font-weight:600;color:#C9A84C;font-family:Georgia,serif;">Braga &amp; Campos Assessoria</div>
+            <div style="font-size:11px;color:#E8CC82;letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;">Ficha de Cliente — Contrato Recorrente</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:11px;color:#8FA3B8;">Relatório: ${nomeMes1} / ${nomeMes2}</div>
+            <div style="margin-top:6px;">${tagCategoria(cliente.categoria)}</div>
+          </div>
+        </div>
+
+        <!-- Nome do cliente -->
+        <div style="background:#122540;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:20px;font-weight:600;color:#fff;font-family:Georgia,serif;">${cliente.cliente}</div>
+            <div style="font-size:12px;color:#8FA3B8;margin-top:2px;">${cliente.empresa} &nbsp;·&nbsp; ${cliente.trib}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:10px;color:#8FA3B8;text-transform:uppercase;letter-spacing:1px;">Código</div>
+            <div style="font-size:24px;font-weight:700;color:#C9A84C;">${code}</div>
+          </div>
+        </div>
+
+        <!-- Campos em grid -->
+        <div style="border:1px solid #E0DDD6;border-top:none;border-radius:0 0 8px 8px;padding:20px 24px;background:#FAFAF8;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+            ${campo('CNPJ / CPF / CEI', cnpj)}
+            ${campo('Inscrição Estadual', ie)}
+            ${campo('Tributação', cliente.trib)}
+            ${campo('Ramo de Atividade', cliente.sheet ? '' : '')}
+            ${campo('Conselho Profissional', conselho)}
+            ${campo('Sócio Reside no Exterior', exterior)}
+            ${campo('Nossa Empresa', cliente.empresa)}
+            ${campo('Situação Contratual', sit)}
+            ${campo('Início do Contrato', inicio)}
+            ${campo('Final do Contrato', fim)}
+            ${campo('DP', cliente.dp)}
+            ${campo('Fiscal', cliente.fiscal)}
+            ${campo('Contábil', cliente.cont)}
+            ${campo('Status do Contrato', contrato)}
+            ${campo('Confirmação Cadastro', cadastro)}
+          </div>
+          <div style="margin-top:4px;">${campo('Observações', obs)}</div>
+          <div style="margin-top:16px;font-size:10px;color:#8FA3B8;border-top:1px solid #E0DDD6;padding-top:10px;">
+            Gerado automaticamente pelo sistema B&amp;C · ${new Date().toLocaleString('pt-BR')} · Sistema de Gestão de Contratos Recorrentes
+          </div>
+        </div>
+      </div>`;
+    }
+
+    // Open print window
+    const win = window.open('', '_blank');
+    win.document.write(`<!DOCTYPE html><html lang="pt-BR"><head>
+      <meta charset="UTF-8">
+      <title>Fichas B&C — ${nomeMes1} / ${nomeMes2}</title>
+      <style>
+        body { margin:0; padding:0; background:#fff; }
+        @media print {
+          @page { margin: 10mm; size: A4; }
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+      </style>
+    </head><body onload="setTimeout(function(){window.print();},400)">${fichasHtml}
+    </body></html>`);
+    win.document.close();
+
+    showToast('Fichas abertas — use Ctrl+P / Salvar como PDF.');
+  } catch(e) {
+    console.error(e);
+    showToast('Erro ao gerar fichas: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    label.textContent = '\u2195 Fichas PDF';
+  }
+}
+</script>
+
+</body>
+</html>
